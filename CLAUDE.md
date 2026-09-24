@@ -27,7 +27,12 @@ WhatsApp מוכנה מראש לדניאל, שמתאם תשלום ידנית לא
 7. **מספר וואטסאפ:** `972547887754` — מוגדר במקום אחד בלבד:
    `src/config/siteConfig.ts` (`whatsappNumber`)
 8. **לוגו:** אין לוגו גרפי — טיפוגרפיה בלבד ("Daniel Bakery" + "דניאל בייקרי")
-9. **Git:** ריפו git מקומי אותחל מתחילת הפרויקט
+9. **Git:** ריפו git מקומי אותחל מתחילת הפרויקט, מחובר ל-
+   `https://github.com/tbarak770/Daniel-Bakery`, `git config` המקומי מוגדר עם
+   `tbarak80@gmail.com`. **הרשאת קבע מהמשתמש: לבצע `git push` אוטומטית בכל
+   שינוי, בלי לשאול קודם** (ניתנה ב-24/09/2026).
+10. **אתר חי:** `https://tbarak770.github.io/Daniel-Bakery/` (GitHub Pages,
+    `build_type: workflow`, מופעל דרך API)
 
 ## פלטת צבעים וטיפוגרפיה
 
@@ -48,7 +53,7 @@ src/
   utils/whatsapp.ts          buildWhatsappUrl — בונה את הודעת ה-wa.me
   components/icons.tsx       כל אייקוני ה-SVG המשותפים
   components/layout/         Header, MobileMenu, Footer, FloatingWhatsAppButton
-  components/home/           Hero, CategoryShowcase, ProductsSection (Best Sellers + Featured), AboutPreview, Gallery, CtaBanner
+  components/home/           Hero, CategoryShowcase, ProductsSection (Best Sellers + Featured), VideoStrip, AboutPreview, Gallery, CtaBanner
   components/product/        ProductCard, ProductGrid
   components/cart/           CartDrawer (שני שלבים: cart → form), CartLineItem, OrderForm
   pages/                     HomePage, ProductsPage (טאבים + חיפוש ב-query params), AboutPage
@@ -70,6 +75,16 @@ src/
 - **ולידציה בטופס:** הודעות שגיאה בעברית מנוהלות ידנית ב-state (לא הודעות
   ברירת מחדל של הדפדפן, שהיו מופיעות בשפת המערכת ולא בעברית). שגיאה נעלמת
   אוטומטית ברגע שהשדה נערך.
+- **רצועת הוידאו (`VideoStrip.tsx`):** `public/videos/hero-strip.{mp4,webm}` +
+  `hero-strip-poster.jpg` — הורכבו מ-4 קליפים חופשיים מ-Pexels (ganache, עוגיות,
+  piping, חיתוך עוגה) עם ffmpeg (xfade + color grade עקבי, ~10 שניות בלופ).
+  ffmpeg עצמו **אינו** תלות של הפרויקט — הורד כ-binary נייד חד-פעמי לצורך
+  העיבוד בלבד ואינו נדרש ל-build/dev הרגילים. הרכיב טוען את הוידאו רק
+  כשמתקרבים אליו בגלילה (IntersectionObserver), לפני כן מוצגת רק תמונת פוסטר.
+- **תמונות דניאל האמיתיות:** `public/images/daniel/daniel-{portrait,piping,mixing}.jpg`
+  — כולן פורטרט (לא landscape!), משמשות בעמוד האודות בלבד (הירו + רצועת 2
+  תמונות). `AboutPreview.tsx` בדף הבית **עדיין** משתמש בתמונת ה-stock הגנרית
+  (`images/about/about.jpg`) ולא הוחלף בכוונה (מחוץ להיקף שאושר).
 
 ## איך להריץ
 
@@ -83,8 +98,6 @@ npx oxlint          # lint
 
 ## מצב נוכחי
 
-הבנייה הראשונית הושלמה ואומתה חזותית (Playwright headless, desktop + מובייל
-390px) על כל שלושת העמודים, כולל זרימת עגלה מלאה עד יצירת קישור WhatsApp תקין
-עם הודעה בעברית. לא בוצע `git commit` ולא נוצר ריפו ב-GitHub עדיין — הצעד הבא
-הוא push ראשוני, יצירת ריפו ב-GitHub, והפעלת GitHub Pages (Settings → Pages →
-Source: GitHub Actions).
+הבנייה הראשונית + רצועת הוידאו + תמונות דניאל האמיתיות בעמוד האודות — הושלמו,
+נבדקו חזותית (Playwright headless, desktop + מובייל 390px), ונדחפו בהצלחה
+לאתר החי ב-GitHub Pages. אין משימות פתוחות כרגע.
