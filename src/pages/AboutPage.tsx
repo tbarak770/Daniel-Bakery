@@ -13,7 +13,7 @@ export default function AboutPage() {
 
       <div className={`container ${styles.content}`}>
         <div className={styles.imageWrap}>
-          <img src={asset('images/about/about.jpg')} alt="ידיים אופות בבצק ובקמח" loading="lazy" />
+          <img src={asset('images/daniel/daniel-portrait.jpg')} alt="דניאל, האופה של Daniel Bakery" loading="lazy" />
         </div>
         <div className={styles.text}>
           <h2>איך הכל התחיל</h2>
@@ -27,6 +27,17 @@ export default function AboutPage() {
             בגיל צעיר. כל הזמנה נאפית טרייה במיוחד, לפי בקשה, כדי שתקבלו תמיד את הטוב ביותר.
           </p>
           <p>אנחנו שמחים שהגעתם עד כאן, ומקווים שתמצאו כאן משהו שיתאים בדיוק למה שמתחשק לכם.</p>
+        </div>
+      </div>
+
+      <div className="container">
+        <div className={styles.photoStrip}>
+          <div className={styles.photoStripItem}>
+            <img src={asset('images/daniel/daniel-piping.jpg')} alt="דניאל מקשט מאפים בשוקולד" loading="lazy" />
+          </div>
+          <div className={styles.photoStripItem}>
+            <img src={asset('images/daniel/daniel-mixing.jpg')} alt="דניאל מכין קרם במטבח" loading="lazy" />
+          </div>
         </div>
       </div>
 

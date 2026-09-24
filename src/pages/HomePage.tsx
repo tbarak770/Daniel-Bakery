@@ -4,6 +4,7 @@ import CtaBanner from '../components/home/CtaBanner'
 import Gallery from '../components/home/Gallery'
 import Hero from '../components/home/Hero'
 import ProductsSection from '../components/home/ProductsSection'
+import VideoStrip from '../components/home/VideoStrip'
 import { products } from '../data/products'
 
 const bestSellers = products.filter((p) => p.bestSeller)
@@ -16,6 +17,7 @@ export default function HomePage() {
       <CategoryShowcase />
       <ProductsSection eyebrow="הכי אהובים" title="מומלצים ביותר" products={bestSellers} altBg />
       <ProductsSection eyebrow="בחירה שלנו" title="מוצרים נבחרים" products={featured} />
+      <VideoStrip />
       <AboutPreview />
       <Gallery />
       <CtaBanner />
