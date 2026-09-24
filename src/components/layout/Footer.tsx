@@ -53,7 +53,9 @@ export default function Footer() {
           </nav>
         </div>
       </div>
-      <div className={styles.bottom}>© {new Date().getFullYear()} Daniel Bakery | דניאל בייקרי. כל הזכויות שמורות.</div>
+      <div className={styles.bottom}>
+        <div className="container">© {new Date().getFullYear()} Daniel Bakery | דניאל בייקרי. כל הזכויות שמורות.</div>
+      </div>
     </footer>
   )
 }

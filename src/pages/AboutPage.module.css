@@ -1,5 +1,6 @@
 .hero {
-  padding: 56px 0 20px;
+  padding-top: 56px;
+  padding-bottom: 20px;
   text-align: center;
 }
 
@@ -15,7 +16,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 56px;
   align-items: center;
-  padding: 40px 0 20px;
+  padding-top: 40px;
+  padding-bottom: 20px;
 }
 
 .imageWrap {
