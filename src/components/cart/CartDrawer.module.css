@@ -1,0 +1,143 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(59, 36, 23, 0.45);
+  z-index: 70;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.overlayOpen {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(440px, 100vw);
+  background: var(--color-cream);
+  z-index: 71;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+}
+
+.panelOpen {
+  transform: translateX(0);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(59, 36, 23, 0.1);
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  color: var(--color-chocolate);
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  background: var(--color-cream-dark);
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  color: var(--color-chocolate-70);
+  padding: 40px 20px;
+}
+
+.empty strong {
+  font-size: 1.15rem;
+  color: var(--color-chocolate);
+}
+
+.empty a {
+  margin-top: 16px;
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.footer {
+  border-top: 1px solid rgba(59, 36, 23, 0.1);
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: var(--color-chocolate-70);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-chocolate);
+}
+
+.backBtn {
+  border: none;
+  background: transparent;
+  color: var(--color-chocolate-70);
+  font-weight: 600;
+  align-self: flex-start;
+  padding: 4px 0;
+}
+
+.backBtn:hover {
+  color: var(--color-chocolate);
+}
+
+.continueLink {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--color-chocolate-70);
+  text-decoration: underline;
+}
+
+.continueLink:hover {
+  color: var(--color-chocolate);
+}

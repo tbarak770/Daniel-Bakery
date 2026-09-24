@@ -1,0 +1,52 @@
+.header {
+  text-align: center;
+  padding: 48px 0 8px;
+}
+
+.header p {
+  color: var(--color-chocolate-70);
+  margin-top: 10px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 32px 0 40px;
+}
+
+.tab {
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(59, 36, 23, 0.2);
+  background: var(--color-white);
+  color: var(--color-chocolate-70);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab:hover {
+  border-color: var(--color-chocolate);
+}
+
+.tabActive {
+  background: var(--color-chocolate);
+  border-color: var(--color-chocolate);
+  color: var(--color-white);
+}
+
+.searchNotice {
+  text-align: center;
+  color: var(--color-chocolate-70);
+  margin-bottom: 24px;
+}
+
+.searchNotice button {
+  border: none;
+  background: transparent;
+  color: var(--color-gold);
+  font-weight: 700;
+  text-decoration: underline;
+}

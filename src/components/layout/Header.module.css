@@ -1,0 +1,159 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(251, 246, 237, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(59, 36, 23, 0.08);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.logoMain {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-chocolate);
+}
+
+.logoSub {
+  font-size: 0.7rem;
+  color: var(--color-gold);
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navLink {
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: var(--color-chocolate-70);
+  padding: 6px 2px;
+  position: relative;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-gold);
+  transition: width 0.2s ease;
+}
+
+.navLink:hover {
+  color: var(--color-chocolate);
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--color-chocolate);
+  transition: background-color 0.2s ease;
+}
+
+.iconBtn:hover {
+  background: var(--color-cream-dark);
+}
+
+.badge {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-gold);
+  color: var(--color-chocolate);
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchForm {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.25s ease, opacity 0.2s ease;
+}
+
+.searchFormOpen {
+  max-width: 220px;
+  opacity: 1;
+  margin-inline-end: 4px;
+}
+
+.searchInput {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid var(--color-gold);
+  background: transparent;
+  padding: 8px 4px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--color-chocolate);
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--color-chocolate-70);
+  opacity: 0.6;
+}
+
+.hamburger {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .nav {
+    display: none;
+  }
+
+  .searchFormOpen {
+    max-width: 150px;
+  }
+
+  .hamburger {
+    display: inline-flex;
+  }
+}
