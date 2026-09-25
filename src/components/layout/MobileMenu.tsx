@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { CloseIcon } from '../icons'
 import styles from './MobileMenu.module.css'
@@ -8,7 +9,7 @@ interface Props {
 }
 
 export default function MobileMenu({ open, onClose }: Props) {
-  return (
+  return createPortal(
     <>
       <div
         className={`${styles.overlay} ${open ? styles.overlayOpen : ''}`}
@@ -47,6 +48,7 @@ export default function MobileMenu({ open, onClose }: Props) {
           </Link>
         </nav>
       </div>
-    </>
+    </>,
+    document.body,
   )
 }

@@ -2,10 +2,10 @@ import { asset } from '../../utils/asset'
 import styles from './Gallery.module.css'
 
 const IMAGES = [
-  'images/gallery/g1.jpg',
+  'images/daniel/daniel-mixing.jpg',
   'images/gallery/g2.jpg',
   'images/gallery/g3.jpg',
-  'images/gallery/g4.jpg',
+  'images/daniel/daniel-piping.jpg',
   'images/gallery/g5.jpg',
   'images/gallery/g6.jpg',
 ]
