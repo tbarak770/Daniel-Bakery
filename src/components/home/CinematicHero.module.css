@@ -1,0 +1,196 @@
+.wrapper {
+  position: relative;
+  height: 450vh;
+  background: var(--color-chocolate);
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.poster,
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 12, 8, 0.55) 0%, rgba(20, 12, 8, 0.05) 30%, rgba(20, 12, 8, 0.15) 60%, rgba(20, 12, 8, 0.75) 100%);
+}
+
+.content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--color-cream);
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.contentHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brandMain {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.brandSub {
+  font-size: 0.75rem;
+  color: var(--color-gold-light);
+  letter-spacing: 0.04em;
+}
+
+.captionArea {
+  max-width: 640px;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.caption {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  position: absolute;
+}
+
+.captionActive {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+}
+
+.captionTitle {
+  font-size: clamp(1.6rem, 1.1rem + 2vw, 2.6rem);
+  font-weight: 800;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.4);
+}
+
+.captionSubtitle {
+  margin-top: 10px;
+  font-size: clamp(0.95rem, 0.85rem + 0.3vw, 1.1rem);
+  color: rgba(251, 246, 237, 0.88);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(251, 246, 237, 0.35);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.dotActive {
+  background: var(--color-gold);
+  transform: scale(1.3);
+}
+
+.scrollHint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: rgba(251, 246, 237, 0.75);
+  transition: opacity 0.4s ease;
+}
+
+.scrollHintHidden {
+  opacity: 0;
+}
+
+.scrollArrow {
+  animation: bounce 1.6s ease-in-out infinite;
+}
+
+.scrollArrowIcon {
+  display: block;
+  transform: rotate(-90deg);
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.ctaOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.ctaOverlayVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ctaInner {
+  text-align: center;
+  color: var(--color-cream);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.ctaTagline {
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper {
+    height: auto;
+  }
+
+  .sticky {
+    position: relative;
+  }
+}

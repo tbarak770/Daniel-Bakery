@@ -53,9 +53,11 @@ src/
   utils/whatsapp.ts          buildWhatsappUrl — בונה את הודעת ה-wa.me
   components/icons.tsx       כל אייקוני ה-SVG המשותפים
   components/layout/         Header, MobileMenu, Footer, FloatingWhatsAppButton
-  components/home/           Hero, CategoryShowcase, ProductsSection (Best Sellers + Featured), VideoStrip, AboutPreview, Gallery, CtaBanner
+  components/home/           Hero, CinematicHero (דסקטופ בלבד), CategoryShowcase, ProductsSection (Best Sellers + Featured), VideoStrip, AboutPreview, Gallery, CtaBanner
   components/product/        ProductCard, ProductGrid
   components/cart/           CartDrawer (שני שלבים: cart → form), CartLineItem, OrderForm
+  components/ScrollToTop.tsx  מאפס גלילה ל-(0,0) בכל שינוי route
+  hooks/useIsDesktop.ts       matchMedia('(min-width: 900px)')
   pages/                     HomePage, ProductsPage (טאבים + חיפוש ב-query params), AboutPage
 ```
 
@@ -82,9 +84,30 @@ src/
   העיבוד בלבד ואינו נדרש ל-build/dev הרגילים. הרכיב טוען את הוידאו רק
   כשמתקרבים אליו בגלילה (IntersectionObserver), לפני כן מוצגת רק תמונת פוסטר.
 - **תמונות דניאל האמיתיות:** `public/images/daniel/daniel-{portrait,piping,mixing}.jpg`
-  — כולן פורטרט (לא landscape!), משמשות בעמוד האודות בלבד (הירו + רצועת 2
-  תמונות). `AboutPreview.tsx` בדף הבית **עדיין** משתמש בתמונת ה-stock הגנרית
-  (`images/about/about.jpg`) ולא הוחלף בכוונה (מחוץ להיקף שאושר).
+  — כולן פורטרט (לא landscape!). `daniel-portrait` בעמוד האודות (הירו) +
+  רצועת `daniel-piping`/`daniel-mixing` מתחת. `daniel-mixing`/`daniel-piping`
+  **גם** בגלריית דף הבית (`Gallery.tsx`, מיקומים 1+4 במערך - התאים ה"גבוהים"
+  במוזאיקה). `AboutPreview.tsx` בדף הבית **עדיין** משתמש בתמונת ה-stock
+  הגנרית (`images/about/about.jpg`) ולא הוחלף בכוונה (מחוץ להיקף שאושר).
+- **CSS padding shorthand + `.container`:** כל פעם שרכיב מקבל גם `container`
+  וגם מחלקת CSS-module משלו על אותו אלמנט (`className={`container ${styles.x}`}`),
+  אסור להשתמש ב-shorthand `padding: A B C` / `padding: A B` על אותה מחלקה -
+  הערך האמצעי (0 בד"כ) מאפס את ה-padding האופקי ודורס את `.container` (נתקל
+  בזה כמה פעמים: Header, Footer, AboutPage). **לכתוב תמיד
+  `padding-top`/`padding-bottom` נפרדים** כשרוצים רק ריווח אנכי.
+- **CSS specificity ב-media queries עם `:nth-child`:** כלל בסיסי
+  `.item { ... }` יש לו specificity **נמוך** מ-`.item:nth-child(4) { ... }`,
+  ולכן לא יעקוף אותו גם אם הוא מאוחר יותר בקובץ ובתוך media query. כדי
+  לעקוף/לאפס חוקי `:nth-child(N)` ספציפיים ל-breakpoint אחר, להשתמש ב-
+  `.item:nth-child(n)` (מתאים לכל הילדים, specificity שווה) ולא ב-`.item`
+  לבד. ראה `Gallery.module.css`.
+- **`CinematicHero.tsx` (דסקטופ בלבד, `min-width: 900px`):** חוויית
+  scroll-scrubbing - רצף 135 פריימי WebP ב-`public/images/cinematic/`
+  (חולצו מ-5 קטעי stock דרך ffmpeg, ~4.9MB), מצוירים ל-`<canvas>` לפי התקדמות
+  גלילה בתוך wrapper בגובה `450vh`. **מחליף** לגמרי את `Hero`+`VideoStrip`
+  בדסקטופ; במובייל שניהם נשארים בדיוק כמו שהיו (`HomePage.tsx` בוחר לפי
+  `useIsDesktop()`, ומוודא אפס בקשות רשת לתיקיית `cinematic/` במובייל).
+  מכבד `prefers-reduced-motion` (מציג פריים אחרון סטטי, בלי pinning).
 
 ## איך להריץ
 
@@ -98,6 +121,8 @@ npx oxlint          # lint
 
 ## מצב נוכחי
 
-הבנייה הראשונית + רצועת הוידאו + תמונות דניאל האמיתיות בעמוד האודות — הושלמו,
-נבדקו חזותית (Playwright headless, desktop + מובייל 390px), ונדחפו בהצלחה
-לאתר החי ב-GitHub Pages. אין משימות פתוחות כרגע.
+הבנייה הראשונית, רצועת הוידאו, תמונות דניאל האמיתיות (אודות + גלריה), תיקוני
+מובייל (תפריט המבורגר, גלילה בניווט, מוזאיקת גלריה), וחוויית ה-scroll-scrubbing
+הקולנועית בדסקטופ (`CinematicHero`) — כולם הושלמו, נבדקו חזותית (Playwright
+headless, desktop + מובייל 390px), ונדחפו בהצלחה לאתר החי ב-GitHub Pages. אין
+משימות פתוחות כרגע.
