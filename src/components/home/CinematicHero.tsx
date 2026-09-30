@@ -4,28 +4,109 @@ import { asset } from '../../utils/asset'
 import { ChevronIcon } from '../icons'
 import styles from './CinematicHero.module.css'
 
+interface Photo {
+  src: string
+  weight: number
+}
+
 interface Chapter {
-  startFrame: number
-  endFrame: number
+  number: string
   title: string
   subtitle: string
+  photoStart: number
+  photoEnd: number
 }
 
-const TOTAL_FRAMES = 105
-
-const CHAPTERS: Chapter[] = [
-  { startFrame: 1, endFrame: 30, title: 'קמח, ביצה, שוקולד', subtitle: 'כל מרכיב נכנס לקערה באהבה, עוד לפני שהתחלנו' },
-  { startFrame: 31, endFrame: 80, title: 'ישר מהתנור', subtitle: 'זהובות, חמות, בדיוק ברגע הנכון' },
-  { startFrame: 81, endFrame: 105, title: 'שוקולד עשיר נמס בפנים', subtitle: 'זה הטעם של דניאל בייקרי' },
+// Relative hold-time per photo. Chapters 2 & 3 (the oven + fresh-from-oven
+// beats) get more weight so their captions have time to be read, per the
+// "emphasize the story" request.
+const PHOTOS: Photo[] = [
+  { src: 'images/cinematic/photo-01.webp', weight: 1 },
+  { src: 'images/cinematic/photo-02.webp', weight: 1 },
+  { src: 'images/cinematic/photo-03.webp', weight: 1.6 },
+  { src: 'images/cinematic/photo-04.webp', weight: 1.6 },
+  { src: 'images/cinematic/photo-05.webp', weight: 1 },
+  { src: 'images/cinematic/photo-06.webp', weight: 1 },
 ]
 
-function framePath(index: number): string {
-  const padded = String(index).padStart(4, '0')
-  return asset(`images/cinematic/frame-${padded}.webp`)
+const CHAPTERS: Chapter[] = [
+  {
+    number: '01',
+    title: 'קמח, ביצה, שוקולד',
+    subtitle: 'כל מרכיב נכנס לקערה באהבה, עוד לפני שהתחלנו',
+    photoStart: 0,
+    photoEnd: 1,
+  },
+  {
+    number: '02',
+    title: 'לתנור, בסבלנות',
+    subtitle: 'חום נמוך, המון זמן, בלי שום קיצורי דרך',
+    photoStart: 2,
+    photoEnd: 2,
+  },
+  {
+    number: '03',
+    title: 'ישר מהתנור',
+    subtitle: 'זהובה, חמה, בדיוק ברגע הנכון',
+    photoStart: 3,
+    photoEnd: 3,
+  },
+  {
+    number: '04',
+    title: 'שוקולד עשיר נמס בפנים',
+    subtitle: 'זה הטעם של דניאל בייקרי',
+    photoStart: 4,
+    photoEnd: 5,
+  },
+]
+
+const CROSSFADE = 0.035
+const TOTAL_WEIGHT = PHOTOS.reduce((sum, p) => sum + p.weight, 0)
+
+// Cumulative progress boundaries [start0, start1, ..., end] for each photo
+const BOUNDARIES: number[] = (() => {
+  const arr: number[] = [0]
+  let cumulative = 0
+  for (const photo of PHOTOS) {
+    cumulative += photo.weight
+    arr.push(cumulative / TOTAL_WEIGHT)
+  }
+  return arr
+})()
+
+function clamp01(v: number): number {
+  return Math.min(1, Math.max(0, v))
 }
 
-function chapterIndexForFrame(frame: number): number {
-  const idx = CHAPTERS.findIndex((c) => frame >= c.startFrame && frame <= c.endFrame)
+function photoOpacity(index: number, progress: number): number {
+  const start = BOUNDARIES[index]
+  const end = BOUNDARIES[index + 1]
+  if (progress <= start - CROSSFADE || progress >= end + CROSSFADE) return 0
+  if (progress < start + CROSSFADE) {
+    return index === 0 ? 1 : clamp01((progress - (start - CROSSFADE)) / (2 * CROSSFADE))
+  }
+  if (progress > end - CROSSFADE) {
+    return index === PHOTOS.length - 1 ? 1 : clamp01((end + CROSSFADE - progress) / (2 * CROSSFADE))
+  }
+  return 1
+}
+
+function photoScale(index: number, progress: number): number {
+  const start = BOUNDARIES[index]
+  const end = BOUNDARIES[index + 1]
+  const local = clamp01((progress - start) / (end - start || 1))
+  return 1 + 0.07 * local
+}
+
+function chapterIndexForProgress(progress: number): number {
+  let photoIndex = PHOTOS.length - 1
+  for (let i = 0; i < PHOTOS.length; i++) {
+    if (progress < BOUNDARIES[i + 1]) {
+      photoIndex = i
+      break
+    }
+  }
+  const idx = CHAPTERS.findIndex((c) => photoIndex >= c.photoStart && photoIndex <= c.photoEnd)
   return idx === -1 ? CHAPTERS.length - 1 : idx
 }
 
@@ -35,89 +116,44 @@ function prefersReducedMotion(): boolean {
 
 export default function CinematicHero() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const stickyRef = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const imagesRef = useRef<HTMLImageElement[]>([])
-  const frameIndexRef = useRef(1)
+  const imgRefs = useRef<(HTMLImageElement | null)[]>([])
   const rafRef = useRef<number | null>(null)
 
   const [ready, setReady] = useState(false)
-  const [frameIndex, setFrameIndex] = useState(1)
+  const [progress, setProgress] = useState(0)
   const [scrolled, setScrolled] = useState(false)
   const reduced = prefersReducedMotion()
 
-  // Preload all frames
+  // Preload the 6 photos
   useEffect(() => {
     let cancelled = false
-    const images: HTMLImageElement[] = new Array(TOTAL_FRAMES + 1)
     let loadedCount = 0
-
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+    for (const photo of PHOTOS) {
       const img = new Image()
-      img.src = framePath(i)
+      img.src = asset(photo.src)
       img.onload = img.onerror = () => {
         loadedCount++
-        if (loadedCount >= TOTAL_FRAMES && !cancelled) {
-          imagesRef.current = images
-          setReady(true)
-        }
+        if (loadedCount >= PHOTOS.length && !cancelled) setReady(true)
       }
-      images[i] = img
     }
-    imagesRef.current = images
-
     return () => {
       cancelled = true
     }
   }, [])
 
-  // Draw a given frame to canvas, cover-fit
-  function drawFrame(index: number) {
-    const canvas = canvasRef.current
-    const img = imagesRef.current[index]
-    if (!canvas || !img || !img.complete || img.naturalWidth === 0) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const cw = canvas.width
-    const ch = canvas.height
-    const iw = img.naturalWidth
-    const ih = img.naturalHeight
-    const scale = Math.max(cw / iw, ch / ih)
-    const dw = iw * scale
-    const dh = ih * scale
-    const dx = (cw - dw) / 2
-    const dy = (ch - dh) / 2
-    ctx.clearRect(0, 0, cw, ch)
-    ctx.drawImage(img, dx, dy, dw, dh)
-  }
-
-  // Size canvas to sticky container
-  useEffect(() => {
-    if (!ready || reduced) return
-    const canvas = canvasRef.current
-    const sticky = stickyRef.current
-    if (!canvas || !sticky) return
-
-    function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const rect = sticky!.getBoundingClientRect()
-      canvas!.width = Math.round(rect.width * dpr)
-      canvas!.height = Math.round(rect.height * dpr)
-      drawFrame(frameIndexRef.current)
-    }
-
-    resize()
-    window.addEventListener('resize', resize)
-    return () => window.removeEventListener('resize', resize)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, reduced])
-
-  // Scroll-driven scrubbing
+  // Scroll-driven progress
   useEffect(() => {
     if (!ready || reduced) return
     const wrapper = wrapperRef.current
     if (!wrapper) return
+
+    function applyProgress(p: number) {
+      imgRefs.current.forEach((img, i) => {
+        if (!img) return
+        img.style.opacity = String(photoOpacity(i, p))
+        img.style.transform = `scale(${photoScale(i, p)})`
+      })
+    }
 
     function onScroll() {
       if (rafRef.current) return
@@ -126,37 +162,46 @@ export default function CinematicHero() {
         const rect = wrapper!.getBoundingClientRect()
         const viewportH = window.innerHeight
         const scrollable = rect.height - viewportH
-        const progress = scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0
-        const next = 1 + Math.round(progress * (TOTAL_FRAMES - 1))
-        if (next !== frameIndexRef.current) {
-          frameIndexRef.current = next
-          setFrameIndex(next)
-          drawFrame(next)
-        }
-        if (progress > 0.02 && !scrolled) setScrolled(true)
+        const p = scrollable > 0 ? clamp01(-rect.top / scrollable) : 0
+        setProgress(p)
+        applyProgress(p)
+        if (p > 0.02) setScrolled(true)
       })
     }
 
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
     return () => {
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, reduced])
 
-  const effectiveFrame = reduced ? TOTAL_FRAMES : frameIndex
-  const activeChapter = chapterIndexForFrame(effectiveFrame)
-  const ctaVisible = effectiveFrame >= TOTAL_FRAMES - 5
+  const effectiveProgress = reduced ? 1 : progress
+  const activeChapter = chapterIndexForProgress(effectiveProgress)
+  const ctaVisible = effectiveProgress >= 1 - CROSSFADE * 1.5
 
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
-      <div className={styles.sticky} ref={stickyRef}>
-        {!ready || reduced ? (
-          <img className={styles.poster} src={framePath(reduced ? TOTAL_FRAMES : 1)} alt="" />
+      <div className={styles.sticky}>
+        {!ready ? (
+          <img className={styles.photo} src={asset(PHOTOS[0].src)} alt="" />
         ) : (
-          <canvas className={styles.canvas} ref={canvasRef} aria-hidden="true" />
+          PHOTOS.map((photo, i) => (
+            <img
+              key={photo.src}
+              ref={(el) => {
+                imgRefs.current[i] = el
+              }}
+              className={styles.photo}
+              src={asset(photo.src)}
+              alt=""
+              style={reduced ? { opacity: i === PHOTOS.length - 1 ? 1 : 0 } : undefined}
+            />
+          ))
         )}
         <div className={styles.overlay} />
 
@@ -167,25 +212,27 @@ export default function CinematicHero() {
           </div>
 
           <div className={styles.captionArea}>
-            {CHAPTERS.map((chapter, i) => (
-              <div
-                key={chapter.title}
-                className={`${styles.caption} ${i === activeChapter ? styles.captionActive : ''}`}
-              >
-                <div className={styles.captionTitle}>{chapter.title}</div>
-                <div className={styles.captionSubtitle}>{chapter.subtitle}</div>
-              </div>
-            ))}
+            <span className={styles.eyebrow}>הסיפור של עוגיית דניאל</span>
+            <div className={styles.captionStack}>
+              {CHAPTERS.map((chapter, i) => (
+                <div key={chapter.title} className={`${styles.caption} ${i === activeChapter ? styles.captionActive : ''}`}>
+                  <div className={styles.captionTitle}>{chapter.title}</div>
+                  <div className={styles.captionSubtitle}>{chapter.subtitle}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className={styles.footer}>
-            <div className={styles.dots} aria-hidden="true">
+            <div className={styles.chapters} aria-hidden="true">
               {CHAPTERS.map((chapter, i) => (
-                <span key={chapter.title} className={`${styles.dot} ${i === activeChapter ? styles.dotActive : ''}`} />
+                <span key={chapter.number} className={`${styles.chapterNum} ${i === activeChapter ? styles.chapterNumActive : ''}`}>
+                  {chapter.number}
+                </span>
               ))}
             </div>
             <div className={`${styles.scrollHint} ${scrolled ? styles.scrollHintHidden : ''}`}>
-              <span>גללו</span>
+              <span>גללו כדי להמשיך בסיפור</span>
               <span className={styles.scrollArrow}>
                 <ChevronIcon size={16} className={styles.scrollArrowIcon} />
               </span>
