@@ -51,9 +51,10 @@ src/
   utils/asset.ts             asset(path) — עוטף import.meta.env.BASE_URL לנתיבי public/
   utils/format.ts            formatPrice, todayIsoDate, isoToDisplayDate (DD/MM/YYYY)
   utils/whatsapp.ts          buildWhatsappUrl — בונה את הודעת ה-wa.me
+  utils/scrollCrossfade.ts   מתמטיקת crossfade+Ken Burns משותפת (CinematicHero + CakeZoomCinematic)
   components/icons.tsx       כל אייקוני ה-SVG המשותפים
   components/layout/         Header, MobileMenu, Footer, FloatingWhatsAppButton
-  components/home/           Hero, CinematicHero (דסקטופ בלבד), CategoryShowcase, ProductsSection (Best Sellers + Featured), VideoStrip, AboutPreview, Gallery, CtaBanner
+  components/home/           Hero, CinematicHero (דסקטופ בלבד), CakeZoomCinematic/CakeZoomMobile, CategoryShowcase, ProductsSection (Best Sellers + Featured), VideoStrip, AboutPreview, Gallery, CtaBanner
   components/product/        ProductCard, ProductGrid
   components/cart/           CartDrawer (שני שלבים: cart → form), CartLineItem, OrderForm
   components/ScrollToTop.tsx  מאפס גלילה ל-(0,0) בכל שינוי route
@@ -124,6 +125,21 @@ src/
   `.captionArea` להתכווץ לרוחב ה-eyebrow הקטן בלבד (~146px) במקום 820px,
   וכל הכיתוב "נדחס" לשורות קצרות. התיקון: `width:100%` מפורש בנוסף
   ל-`max-width` על אלמנט flex עם `align-items:center`.
+- **`CakeZoomCinematic.tsx`/`CakeZoomMobile.tsx` (סקשן קולנועי שני, באמצע
+  דף הבית, בין "מוצרים נבחרים" ל"הסיפור שלנו"):** אותו רעיון כמו
+  `CinematicHero` אבל **בלי שום טקסט/UI** - חוויה ויזואלית טהורה של "צלילה"
+  לתוך עוגת שוקולד (6 תמונות סטילס שהמשתמש סיפק,
+  `public/images/cake-zoom/photo-01.webp`...`photo-06.webp`, ~1.1MB).
+  בדסקטופ: אותה טכניקת scroll-scrubbing (`wrapper 300vh` + 6 `<img>`
+  חופפים + Ken Burns עד 1.10). **במובייל: לא scroll-scrubbing** - סליידשואו
+  אוטומטי פשוט (crossfade כל 2.8 שניות, `setInterval`, בלי sticky/גלילה)
+  כי scroll-scrub כבד מדי לביצועי מובייל. מתמטיקת ה-crossfade/זום הופקה
+  מ-`CinematicHero` לקובץ משותף `src/utils/scrollCrossfade.ts` (שני
+  הרכיבים משתמשים בו). gotcha: קבצי המקור מהמשתמש הגיעו עם שמות
+  לא-רציפים (`1,2,3,4,6.png` + קובץ UUID) - הסדר החזותי הנכון (לפי תוכן,
+  לא שם) היה `1,2,3,4,6.png,UUID.png` - "6.png" היה בפועל הפריים החמישי
+  (האור מופיע) וקובץ ה-UUID היה הפריים האחרון/הסיום (העוגה חתוכה). תמיד
+  לבדוק תוכן חזותי בפועל, לא לסמוך על שם קובץ.
 
 ## איך להריץ
 

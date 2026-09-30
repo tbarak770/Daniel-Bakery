@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { asset } from '../../utils/asset'
+import { clamp01, computeBoundaries, crossfadeOpacity, kenBurnsScale } from '../../utils/scrollCrossfade'
 import { ChevronIcon } from '../icons'
 import styles from './CinematicHero.module.css'
 
@@ -61,41 +62,15 @@ const CHAPTERS: Chapter[] = [
 ]
 
 const CROSSFADE = 0.035
-const TOTAL_WEIGHT = PHOTOS.reduce((sum, p) => sum + p.weight, 0)
-
-// Cumulative progress boundaries [start0, start1, ..., end] for each photo
-const BOUNDARIES: number[] = (() => {
-  const arr: number[] = [0]
-  let cumulative = 0
-  for (const photo of PHOTOS) {
-    cumulative += photo.weight
-    arr.push(cumulative / TOTAL_WEIGHT)
-  }
-  return arr
-})()
-
-function clamp01(v: number): number {
-  return Math.min(1, Math.max(0, v))
-}
+const MAX_SCALE = 1.07
+const BOUNDARIES = computeBoundaries(PHOTOS.map((p) => p.weight))
 
 function photoOpacity(index: number, progress: number): number {
-  const start = BOUNDARIES[index]
-  const end = BOUNDARIES[index + 1]
-  if (progress <= start - CROSSFADE || progress >= end + CROSSFADE) return 0
-  if (progress < start + CROSSFADE) {
-    return index === 0 ? 1 : clamp01((progress - (start - CROSSFADE)) / (2 * CROSSFADE))
-  }
-  if (progress > end - CROSSFADE) {
-    return index === PHOTOS.length - 1 ? 1 : clamp01((end + CROSSFADE - progress) / (2 * CROSSFADE))
-  }
-  return 1
+  return crossfadeOpacity(index, PHOTOS.length, BOUNDARIES, progress, CROSSFADE)
 }
 
 function photoScale(index: number, progress: number): number {
-  const start = BOUNDARIES[index]
-  const end = BOUNDARIES[index + 1]
-  const local = clamp01((progress - start) / (end - start || 1))
-  return 1 + 0.07 * local
+  return kenBurnsScale(index, BOUNDARIES, progress, MAX_SCALE)
 }
 
 function chapterIndexForProgress(progress: number): number {
