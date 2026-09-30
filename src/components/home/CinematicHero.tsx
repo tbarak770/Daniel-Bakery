@@ -11,14 +11,12 @@ interface Chapter {
   subtitle: string
 }
 
-const TOTAL_FRAMES = 135
+const TOTAL_FRAMES = 105
 
 const CHAPTERS: Chapter[] = [
-  { startFrame: 1, endFrame: 25, title: 'קמח, ביצה, שוקולד', subtitle: 'כל מרכיב נבחר בקפידה, עוד לפני שהתחלנו' },
-  { startFrame: 26, endFrame: 50, title: 'שוקולד עשיר נמס פנימה', subtitle: 'הלב של כל עוגה שיוצאת מהמטבח שלנו' },
-  { startFrame: 51, endFrame: 80, title: 'חום נמוך, המון סבלנות', subtitle: 'אפייה איטית, בלי שום קיצורי דרך' },
-  { startFrame: 81, endFrame: 105, title: 'זהוב, חם, מוכן', subtitle: 'בדיוק ברגע הנכון, לא רגע קודם' },
-  { startFrame: 106, endFrame: 135, title: 'שוקולד נמס, לב נוזלי', subtitle: 'זה הטעם של דניאל בייקרי' },
+  { startFrame: 1, endFrame: 30, title: 'קמח, ביצה, שוקולד', subtitle: 'כל מרכיב נכנס לקערה באהבה, עוד לפני שהתחלנו' },
+  { startFrame: 31, endFrame: 80, title: 'ישר מהתנור', subtitle: 'זהובות, חמות, בדיוק ברגע הנכון' },
+  { startFrame: 81, endFrame: 105, title: 'שוקולד עשיר נמס בפנים', subtitle: 'זה הטעם של דניאל בייקרי' },
 ]
 
 function framePath(index: number): string {
