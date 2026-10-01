@@ -1,0 +1,77 @@
+/* Scrollable distance = section height - 100vh, tuned to ~20-30px of scroll per frame */
+.section {
+  position: relative;
+  height: 200vh;
+  background: var(--color-ink);
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-ink);
+}
+
+.headline {
+  position: absolute;
+  inset-inline: 0;
+  top: 15%;
+  padding: 0 24px;
+  text-align: center;
+  color: var(--color-cream);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.title {
+  font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3.1rem);
+  font-weight: 800;
+  line-height: 1.15;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.7);
+}
+
+.subtitle {
+  margin-top: 12px;
+  font-size: clamp(1rem, 0.9rem + 0.35vw, 1.2rem);
+  color: rgba(251, 246, 237, 0.9);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 1100px) {
+  .section {
+    height: 180vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    height: 180vh;
+  }
+
+  .headline {
+    top: 13%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    height: auto;
+  }
+
+  .stage {
+    position: relative;
+  }
+
+  .headline {
+    opacity: 1;
+  }
+}

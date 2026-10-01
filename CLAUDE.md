@@ -85,9 +85,10 @@ src/
   utils/format.ts            formatPrice, todayIsoDate, isoToDisplayDate (DD/MM/YYYY)
   utils/whatsapp.ts          buildWhatsappUrl — בונה את הודעת ה-wa.me
   utils/scrollCrossfade.ts   מתמטיקת crossfade+Ken Burns משותפת (CinematicHero + CakeZoomCinematic)
+  utils/framePreloader.ts    טעינה מוקדמת + decode של רצף פריימים לקנבס (CroissantScrollSequence)
   components/icons.tsx       כל אייקוני ה-SVG המשותפים
   components/layout/         Header, MobileMenu, Footer, FloatingWhatsAppButton
-  components/home/           Hero, CinematicHero (דסקטופ בלבד), CakeZoomCinematic/CakeZoomMobile, CategoryShowcase, ProductsSection (Best Sellers + Featured), VideoStrip, AboutPreview, Gallery, CtaBanner
+  components/home/           CroissantScrollSequence (ראשון בדף הבית, כל המכשירים), Hero, CinematicHero (דסקטופ בלבד), CakeZoomCinematic/CakeZoomMobile, CategoryShowcase, ProductsSection (Best Sellers + Featured), VideoStrip, AboutPreview, Gallery, CtaBanner
   components/product/        ProductCard, ProductGrid
   components/cart/           CartDrawer (שני שלבים: cart → form), CartLineItem, OrderForm
   components/ScrollToTop.tsx  מאפס גלילה ל-(0,0) בכל שינוי route
@@ -173,6 +174,26 @@ src/
   לא שם) היה `1,2,3,4,6.png,UUID.png` - "6.png" היה בפועל הפריים החמישי
   (האור מופיע) וקובץ ה-UUID היה הפריים האחרון/הסיום (העוגה חתוכה). תמיד
   לבדוק תוכן חזותי בפועל, לא לסמוך על שם קובץ.
+- **`CroissantScrollSequence.tsx` (הסקשן הראשון בדף הבית, לפני `CinematicHero`/
+  `Hero`, בכל המכשירים):** שחזור אפקט הקרואסון של crussant.vercel.app - קרואסון
+  שנאפה מבצק נא ל-hero shot זהוב, כשמיקום הגלילה = הפריים (קדימה/אחורה, עוצר
+  כשהגלילה עוצרת). **קנבס 2D אחד** (לא `<img>` חופפים, לא וידאו), refs בלבד בלי
+  state של React בגלילה, `drawImage` רק כשהפריים משתנה, DPR עד 2,
+  `ResizeObserver`. מיפוי: `Math.round` לפריים הקרוב; 5% האחרונים של הגלילה
+  נשארים על הפריים האחרון (`HERO_HOLD`). כותרת "הזמן הוא המרכיב הסודי" נכנסת
+  בהדרגה מ-84% התקדמות. גובה: 200vh דסקטופ / 180vh עד 1100px / 180vh מובייל
+  (~21-30px גלילה לפריים). במסך לאורך: חישוב "hybrid" (לא cover) כך שהקרואסון
+  (`FOCAL`) לעולם לא נחתך; רצועת התמונה מתמזגת לרקע בגרדיאנט שמצויר בקנבס.
+  **פריימים:** מקור = `source-frames/croissant/1.png..33.png` (1672×941, ~60MB,
+  **ב-.gitignore - לא בריפו**, רק מקומית/OneDrive). המשתמש תכנן 40 אבל סיפק 33
+  (אמר "יש 34" - בפועל 33 בתיקייה). אם יתווספו פריימים: לעדכן `FRAME_COUNT`
+  ולייצא מחדש. עותקי אתר: `public/images/croissant/frame-NN.webp` (1600w,
+  ~3.2MB סה"כ) + `m/frame-NN.webp` (1280w, ~2.1MB, נטען כש-`innerWidth<=900`).
+  **יישור:** תמונות ה-AI "קפצו" במסגור (1–6 drift קטן לכל פריים, 8–18 zoom-out
+  ~16% ו-73px למעלה, 7 ו-19–33 יציבים). נמדד אוטומטית (NCC על gradient של רקע
+  סטטי - קיר התנור/מדף, עם מסכה על הקרואסון והאדים) מול פריים 19, ותוקן **רק
+  בעותקי ה-WebP** (crop+scale אחד לפריים, חלון משותף 93% מהתמונה), לא ב-CSS.
+  סקריפטי Node+sharp שבהם נעשה זה היו ב-scratchpad של הסשן (לא בפרויקט).
 
 ## איך להריץ
 
@@ -189,5 +210,8 @@ npx oxlint          # lint
 הבנייה הראשונית, רצועת הוידאו, תמונות דניאל האמיתיות (אודות + גלריה), תיקוני
 מובייל (תפריט המבורגר, גלילה בניווט, מוזאיקת גלריה), וחוויית ה-scroll-scrubbing
 הקולנועית בדסקטופ (`CinematicHero`) — כולם הושלמו, נבדקו חזותית (Playwright
-headless, desktop + מובייל 390px), ונדחפו בהצלחה לאתר החי ב-GitHub Pages. אין
-משימות פתוחות כרגע.
+headless, desktop + מובייל 390px), ונדחפו בהצלחה לאתר החי ב-GitHub Pages.
+נוספו מאז: סקשן הצלילה לעוגה, ערכת הנושא הכהה, ואפקט הקרואסון בגלילה
+(`CroissantScrollSequence`, נבדק בדסקטופ/טאבלט/מובייל כולל גלילה הפוכה,
+resize ו-reduced motion). תוכנית "עיצוב כתום בסגנון crussant לכל האתר" נדונה
+ו**בוטלה** - המשתמש רצה רק את אפקט הקרואסון, לא שינוי עיצוב כללי.

@@ -3,6 +3,7 @@ import CakeZoomCinematic from '../components/home/CakeZoomCinematic'
 import CakeZoomMobile from '../components/home/CakeZoomMobile'
 import CategoryShowcase from '../components/home/CategoryShowcase'
 import CinematicHero from '../components/home/CinematicHero'
+import CroissantScrollSequence from '../components/home/CroissantScrollSequence'
 import CtaBanner from '../components/home/CtaBanner'
 import Gallery from '../components/home/Gallery'
 import Hero from '../components/home/Hero'
@@ -19,6 +20,7 @@ export default function HomePage() {
 
   return (
     <>
+      <CroissantScrollSequence />
       {isDesktop ? <CinematicHero /> : <Hero />}
       <CategoryShowcase />
       <ProductsSection eyebrow="הכי אהובים" title="מומלצים ביותר" products={bestSellers} altBg />

@@ -9,6 +9,9 @@ lerna-debug.log*
 
 node_modules
 dist
+
+# Original high-res animation frames (~60MB); web copies live in public/images/
+source-frames
 dist-ssr
 *.local
 
