@@ -1,137 +1,148 @@
+/* glass product card, after the reference's .product-card */
 .card {
   display: flex;
   flex-direction: column;
-  background: var(--color-white);
+  height: 100%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-card);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  height: 100%;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-6px);
+  border-color: rgba(255, 138, 30, 0.45);
   box-shadow: var(--shadow-soft);
 }
 
 .imageWrap {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1;
   overflow: hidden;
-  background: var(--color-cream-dark);
+  background: #110e0b;
 }
 
 .image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.5s ease;
 }
 
 .card:hover .image {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
-.badge {
+/* glass chips over the photo: price at the bottom corner, tag at the top */
+.price,
+.tag {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: var(--color-chocolate);
-  color: var(--color-gold-light);
+  backdrop-filter: blur(8px);
+  background: rgba(8, 6, 4, 0.85);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: 20px;
+  color: var(--color-white);
+}
+
+.price {
+  bottom: 1rem;
+  left: 1rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.tag {
+  top: 1rem;
+  right: 1rem;
+  padding: 0.3rem 0.8rem;
   font-size: 0.72rem;
-  font-weight: 700;
-  padding: 5px 12px;
-  border-radius: 999px;
-  letter-spacing: 0.03em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
 }
 
 .body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 18px 18px 20px;
-  gap: 8px;
+  padding: 1.6rem;
 }
 
 .category {
-  font-size: 0.75rem;
-  color: var(--color-gold);
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--color-accent);
+  margin-bottom: 0.4rem;
 }
 
 .name {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--color-chocolate);
+  margin: 0 0 0.6rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-white);
 }
 
 .description {
-  font-size: 0.9rem;
-  color: var(--color-chocolate-70);
   flex: 1;
-  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.65);
 }
 
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-  gap: 10px;
-}
-
-.price {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--color-chocolate);
-}
-
+/* full-width ghost pill that turns orange on hover */
 .addBtn {
-  border: 1px solid var(--color-chocolate);
-  background: transparent;
-  color: var(--color-chocolate);
-  border-radius: 999px;
-  padding: 9px 18px;
-  font-weight: 700;
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 25px;
+  background: var(--glass-tint);
+  border: 1px solid var(--glass-border-strong);
+  color: var(--color-white);
   font-size: 0.88rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  white-space: nowrap;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  transition: all 0.25s ease;
 }
 
 .addBtn:hover {
-  background: var(--color-chocolate);
-  color: var(--color-white);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
 }
 
 .stepper {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: var(--color-cream-dark);
-  border-radius: 999px;
-  padding: 4px;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.3rem;
+  border-radius: 25px;
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent);
 }
 
 .stepBtn {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   border: none;
-  background: var(--color-white);
-  color: var(--color-chocolate);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.2s ease;
 }
 
 .stepBtn:hover {
-  background: var(--color-gold-light);
+  background: var(--color-accent-hover);
 }
 
 .qty {
-  min-width: 18px;
-  text-align: center;
-  font-weight: 700;
-  color: var(--color-chocolate);
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--color-white);
 }

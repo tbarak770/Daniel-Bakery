@@ -1,9 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { asset } from '../../utils/asset'
 import { nearestReadyFrame, preloadFrames, type FrameSet } from '../../utils/framePreloader'
 import { clamp01 } from '../../utils/scrollCrossfade'
+import LoadingScreen from './LoadingScreen'
 import styles from './CroissantScrollSequence.module.css'
+
+// Loading screen: shown on the first visit only (frames are browser-cached
+// afterwards), never longer than this, so a slow connection is never stuck.
+const LOADING_MAX_MS = 6000
+let framesLoadedOnce = false
 
 // Frames are generated from source-frames/croissant/*.png (see CLAUDE.md).
 // FRAME_COUNT must match the number of exported web frames.
@@ -116,6 +122,16 @@ export default function CroissantScrollSequence() {
   const targetRef = useRef(0)
   const lastDrawnRef = useRef('')
   const rafRef = useRef<number | null>(null)
+  const [loadPct, setLoadPct] = useState(0)
+  const [loading, setLoading] = useState(
+    () => !framesLoadedOnce && !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
+
+  useEffect(() => {
+    if (!loading) return
+    const id = window.setTimeout(() => setLoading(false), LOADING_MAX_MS)
+    return () => window.clearTimeout(id)
+  }, [loading])
 
   useEffect(() => {
     const section = sectionRef.current
@@ -254,10 +270,20 @@ export default function CroissantScrollSequence() {
       if (shownRef.current >= 0) draw(shownRef.current)
     }
 
-    const { frames, cancel } = preloadFrames(frameUrls(), () => {
-      lastDrawnRef.current = ''
-      if (shownRef.current >= 0) draw(shownRef.current)
-    })
+    const { frames, cancel } = preloadFrames(
+      frameUrls(),
+      () => {
+        lastDrawnRef.current = ''
+        if (shownRef.current >= 0) draw(shownRef.current)
+      },
+      (settled, total) => {
+        setLoadPct(Math.round((settled / total) * 100))
+        if (settled === total) {
+          framesLoadedOnce = true
+          setLoading(false)
+        }
+      },
+    )
     framesRef.current = frames
 
     const ro = new ResizeObserver(() => {
@@ -289,6 +315,7 @@ export default function CroissantScrollSequence() {
 
   return (
     <section className={styles.section} ref={sectionRef} aria-label="קרואסון נאפה">
+      <LoadingScreen progress={loadPct} hidden={!loading} />
       <div className={styles.stage}>
         <canvas className={styles.canvas} ref={canvasRef} aria-hidden="true" />
         <div className={`${styles.segment} ${styles.center}`} ref={seg(0)}>

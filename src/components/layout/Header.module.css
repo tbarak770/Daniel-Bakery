@@ -1,112 +1,150 @@
+/*
+ * Fixed + transparent over the hero (reference .site-navbar). Once scrolled it
+ * gets a dark glass band. NOTE: backdrop-filter makes this a containing block
+ * for fixed children — MobileMenu is portalled to <body> for that reason.
+ */
 .header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 40;
-  background: rgba(20, 12, 8, 0.88);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(251, 246, 237, 0.1);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding-top: 1.4rem;
+  padding-bottom: 0.6rem;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.35s ease, padding 0.35s ease, border-color 0.35s ease;
+}
+
+.scrolled {
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  background: rgba(10, 8, 6, 0.82);
+  backdrop-filter: blur(16px);
+  border-bottom-color: var(--glass-border);
 }
 
 .bar {
+  width: 92%;
+  max-width: 1300px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding-top: 16px;
-  padding-bottom: 16px;
 }
 
 .logo {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 .logoMain {
+  font-family: var(--font-display);
   font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--color-cream);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  direction: ltr;
+  white-space: nowrap;
 }
 
 .logoSub {
+  margin-top: 4px;
   font-size: 0.7rem;
-  color: var(--color-gold);
-  letter-spacing: 0.06em;
-  margin-top: 2px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 2rem;
 }
 
 .navLink {
+  padding: 0.2rem 0;
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 0.98rem;
-  color: var(--color-cream-70);
-  padding: 6px 2px;
-  position: relative;
-}
-
-.navLink::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  right: 0;
-  width: 0;
-  height: 2px;
-  background: var(--color-gold);
-  transition: width 0.2s ease;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid transparent;
+  transition: color 0.25s ease;
 }
 
 .navLink:hover {
-  color: var(--color-cream);
+  color: var(--color-white);
 }
 
-.navLink:hover::after {
-  width: 100%;
+.navLinkActive {
+  color: var(--color-white);
+  border-bottom-color: var(--color-accent);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.75rem;
 }
 
+/* round glass buttons (reference .nav-cart-btn) */
 .iconBtn {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border: none;
-  background: transparent;
-  border-radius: 999px;
-  color: var(--color-cream);
-  transition: background-color 0.2s ease;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border-strong);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
+  transition: background-color 0.25s ease, transform 0.25s ease;
 }
 
 .iconBtn:hover {
-  background: rgba(251, 246, 237, 0.1);
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
 }
 
 .badge {
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: -4px;
+  left: -4px;
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
   border-radius: 999px;
-  background: var(--color-gold);
-  color: var(--color-chocolate);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* reference .btn-order-pill */
+.orderPill {
+  border: none;
+  border-radius: 25px;
+  padding: 0.6rem 1.4rem;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 15px rgba(255, 138, 30, 0.35);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.orderPill:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 138, 30, 0.55);
 }
 
 .searchForm {
@@ -121,39 +159,77 @@
 .searchFormOpen {
   max-width: 220px;
   opacity: 1;
-  margin-inline-end: 4px;
 }
 
 .searchInput {
   width: 100%;
-  border: none;
-  border-bottom: 2px solid var(--color-gold);
-  background: transparent;
-  padding: 8px 4px;
-  font-size: 0.95rem;
+  border: 1px solid var(--glass-border-strong);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
   font-family: inherit;
-  color: var(--color-cream);
+  color: var(--color-white);
   outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: var(--color-accent);
 }
 
 .searchInput::placeholder {
-  color: var(--color-cream-70);
+  color: var(--color-text-50);
 }
 
 .hamburger {
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .nav {
     display: none;
   }
 
-  .searchFormOpen {
-    max-width: 150px;
-  }
-
   .hamburger {
     display: inline-flex;
+  }
+}
+
+@media (max-width: 560px) {
+  .header {
+    padding-top: 0.9rem;
+  }
+
+  .bar {
+    width: 96%;
+    gap: 10px;
+  }
+
+  .actions {
+    gap: 0.4rem;
+  }
+
+  .logoMain {
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+  }
+
+  .logoSub {
+    font-size: 0.62rem;
+  }
+
+  .iconBtn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .orderPill {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.78rem;
+  }
+
+  .searchFormOpen {
+    max-width: 140px;
   }
 }

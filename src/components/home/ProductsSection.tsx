@@ -6,22 +6,27 @@ import styles from './ProductsSection.module.css'
 interface Props {
   eyebrow: string
   title: string
+  description?: string
   products: Product[]
-  altBg?: boolean
+  /** which of the alternating section grounds to use (reference rhythm) */
+  ground?: 1 | 2
 }
 
-export default function ProductsSection({ eyebrow, title, products, altBg }: Props) {
+export default function ProductsSection({ eyebrow, title, description, products, ground = 1 }: Props) {
   return (
-    <section className={`section ${altBg ? styles.altBg : ''}`}>
+    <section className={`section ${ground === 2 ? styles.ground2 : ''}`}>
       <div className="container">
-        <div className={styles.header}>
-          <div className={styles.headingBlock}>
-            <span className={styles.eyebrow}>{eyebrow}</span>
+        <div className="section-header-split">
+          <div>
+            <span className="eyebrow">{eyebrow}</span>
             <h2>{title}</h2>
           </div>
-          <Link to="/products" className={styles.viewAll}>
-            לכל המוצרים ←
-          </Link>
+          <div className={styles.side}>
+            {description && <p>{description}</p>}
+            <Link to="/products" className={styles.viewAll}>
+              לכל המוצרים ←
+            </Link>
+          </div>
         </div>
         <div className={styles.grid}>
           {products.map((product) => (

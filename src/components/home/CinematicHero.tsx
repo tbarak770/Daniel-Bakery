@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { asset } from '../../utils/asset'
 import { clamp01, computeBoundaries, crossfadeOpacity, kenBurnsScale } from '../../utils/scrollCrossfade'
 import { ChevronIcon } from '../icons'
+import LastBite from './LastBite'
 import styles from './CinematicHero.module.css'
 
 interface Photo {
@@ -181,11 +181,6 @@ export default function CinematicHero() {
         <div className={styles.overlay} />
 
         <div className={`${styles.content} ${ctaVisible ? styles.contentHidden : ''}`}>
-          <div className={styles.brand}>
-            <span className={styles.brandMain}>Daniel Bakery</span>
-            <span className={styles.brandSub}>דניאל בייקרי</span>
-          </div>
-
           <div className={styles.captionArea}>
             <span className={styles.eyebrow}>הסיפור של עוגיית דניאל</span>
             <div className={styles.captionStack}>
@@ -215,13 +210,9 @@ export default function CinematicHero() {
           </div>
         </div>
 
+        {/* closing beat of the page, after the reference's "last bite" */}
         <div className={`${styles.ctaOverlay} ${ctaVisible || reduced ? styles.ctaOverlayVisible : ''}`}>
-          <div className={styles.ctaInner}>
-            <span className={styles.ctaTagline}>מתוק יותר כשזה נאפה באהבה</span>
-            <Link to="/products" className="btn btn-primary">
-              לכל המוצרים
-            </Link>
-          </div>
+          <LastBite />
         </div>
       </div>
     </div>

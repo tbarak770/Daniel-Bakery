@@ -28,12 +28,19 @@ function loadOne(url: string, highPriority: boolean): Promise<HTMLImageElement> 
 export function preloadFrames(
   urls: string[],
   onFrameReady: (index: number) => void,
+  /** called after every frame settles (loaded or failed), for loading UIs */
+  onProgress?: (settled: number, total: number) => void,
 ): { frames: FrameSet; cancel: () => void } {
   const frames: FrameSet = {
     images: new Array(urls.length),
     ready: new Array(urls.length).fill(false),
   }
   let cancelled = false
+  let settled = 0
+  const settle = () => {
+    settled++
+    if (!cancelled) onProgress?.(settled, urls.length)
+  }
 
   const load = (i: number, highPriority = false) =>
     loadOne(urls[i], highPriority).then(
@@ -42,10 +49,12 @@ export function preloadFrames(
         frames.images[i] = img
         frames.ready[i] = true
         onFrameReady(i)
+        settle()
       },
       () => {
         // A missing frame must not break the sequence: the renderer falls back
         // to the nearest ready frame.
+        settle()
       },
     )
 

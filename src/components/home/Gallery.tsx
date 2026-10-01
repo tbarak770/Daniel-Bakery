@@ -14,9 +14,12 @@ export default function Gallery() {
   return (
     <section className="section">
       <div className="container">
-        <div className="section-heading">
-          <span className="eyebrow">רגעים מהמטבח</span>
-          <h2>קצת מהעולם של דניאל בייקרי</h2>
+        <div className="section-header-split">
+          <div>
+            <span className="eyebrow">רגעים מהמטבח</span>
+            <h2>קצת מהעולם של דניאל בייקרי</h2>
+          </div>
+          <p>מאחורי הקלעים: הבצק, הקרם, התנור, וכל הרגעים הקטנים שבדרך למאפה המושלם.</p>
         </div>
         <div className={styles.grid}>
           {IMAGES.map((src) => (

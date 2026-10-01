@@ -1,22 +1,53 @@
+/*
+ * Design language adopted from crussant.vercel.app (see CLAUDE.md):
+ * near-black warm grounds, one orange accent, glass surfaces, heavy display
+ * type (Heebo 900 = Hebrew stand-in for Outfit), pill buttons.
+ */
 :root {
-  --color-ink: #140c08;
-  --color-ink-light: #1f1510;
-  --color-cream: #fbf6ed;
-  --color-cream-dark: #f2e8d8;
-  --color-cream-70: rgba(251, 246, 237, 0.7);
-  --color-chocolate: #3b2417;
-  --color-chocolate-70: #5a4131;
-  --color-gold: #c9a25d;
-  --color-gold-light: #e9d8b4;
+  /* grounds (sections alternate between these, like the reference) */
+  --color-ink: #0a0806;
+  --color-ink-light: #0d0a07;
+  --color-ground-1: #080604;
+  --color-ground-2: #0d0a07;
+  --color-ground-3: #060403;
+  --color-ground-4: #090705;
+  --color-ground-footer: #050403;
+
+  /* text */
+  --color-cream: #f7ede8;
   --color-white: #ffffff;
+  --color-text-70: rgba(255, 255, 255, 0.72);
+  --color-text-50: rgba(255, 255, 255, 0.5);
+  --color-cream-70: var(--color-text-70);
 
-  --font-body: 'Assistant', 'Segoe UI', sans-serif;
+  /* accent */
+  --color-accent: #ff8a1e;
+  --color-accent-hover: #ffa347;
+  --color-accent-soft: rgba(255, 138, 30, 0.15);
+  --color-on-accent: #110e0b;
+  --glow-accent: 0 8px 30px rgba(255, 138, 30, 0.45);
+  --glow-accent-strong: 0 12px 40px rgba(255, 138, 30, 0.7);
 
-  --container-width: 1200px;
+  /* glass surfaces */
+  --glass-bg: rgba(20, 16, 13, 0.75);
+  --glass-bg-strong: rgba(16, 12, 9, 0.92);
+  --glass-tint: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(255, 255, 255, 0.15);
+  --hairline: rgba(255, 255, 255, 0.05);
+
+  --font-body: 'Heebo', 'Segoe UI', sans-serif;
+  --font-display: 'Heebo', 'Segoe UI', sans-serif;
+  --font-serif: 'Frank Ruhl Libre', Georgia, serif;
+
+  --container-width: 1240px;
   --radius-md: 14px;
-  --radius-lg: 22px;
-  --shadow-soft: 0 10px 30px -12px rgba(0, 0, 0, 0.45);
-  --shadow-card: 0 4px 18px -6px rgba(0, 0, 0, 0.35);
+  --radius-lg: 20px;
+  --shadow-soft: 0 15px 40px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.45);
+
+  /* fixed floating header height (content on inner pages starts below it) */
+  --header-offset: 96px;
 
   color-scheme: dark;
 }
@@ -39,9 +70,27 @@ body {
   font-family: var(--font-body);
   background: var(--color-ink);
   color: var(--color-cream);
-  line-height: 1.65;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-ink);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 138, 30, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 138, 30, 0.6);
 }
 
 img {
@@ -63,22 +112,26 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 700;
-  line-height: 1.25;
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1.05;
   margin: 0;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  color: var(--color-white);
 }
 
 h1 {
-  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
+  font-size: clamp(2.4rem, 5.5vw, 4.4rem);
 }
 
 h2 {
-  font-size: clamp(1.6rem, 1.3rem + 1.3vw, 2.15rem);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
 }
 
 h3 {
-  font-size: clamp(1.15rem, 1.05rem + 0.4vw, 1.4rem);
+  font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 p {
@@ -92,29 +145,52 @@ p {
   padding: 0 24px;
 }
 
+/* every content section: relative + above the pinned cinematic stages */
 .section {
-  padding: clamp(48px, 6vw, 96px) 0;
+  position: relative;
+  z-index: 20;
+  padding: clamp(64px, 8vw, 112px) 0 clamp(56px, 7vw, 96px);
+  background: var(--color-ground-1);
+  border-top: 1px solid var(--hairline);
 }
 
-.section-heading {
-  text-align: center;
-  max-width: 620px;
-  margin: 0 auto 40px;
-}
-
+/* reference "section-tag": orange, wide tracking */
 .eyebrow {
-  display: block;
-  color: var(--color-gold);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  font-size: 0.85rem;
+  display: inline-block;
+  color: var(--color-accent);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  font-size: 0.8rem;
   margin-bottom: 10px;
 }
 
+/* centred heading block */
+.section-heading {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 48px;
+}
+
 .section-heading p {
-  color: var(--color-cream-70);
-  margin-top: 12px;
+  color: var(--color-text-70);
+  margin-top: 14px;
   font-size: 1.05rem;
+}
+
+/* reference "section-header-split": tag + title on one side, text on the other */
+.section-header-split {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 56px;
+}
+
+.section-header-split p {
+  max-width: 460px;
+  color: var(--color-text-70);
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .btn {
@@ -122,12 +198,15 @@ p {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px 30px;
+  padding: 0.95rem 2.4rem;
   border-radius: 999px;
-  font-weight: 600;
-  font-size: 1rem;
-  border: 1px solid transparent;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.98rem;
+  letter-spacing: 0.02em;
+  border: 1.5px solid transparent;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease,
+    background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .btn:active {
@@ -135,24 +214,29 @@ p {
 }
 
 .btn-primary {
-  background: var(--color-gold);
-  color: var(--color-chocolate);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  box-shadow: var(--glow-accent);
 }
 
 .btn-primary:hover {
-  background: #d9b978;
-  box-shadow: var(--shadow-soft);
+  background: var(--color-accent-hover);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: var(--glow-accent-strong);
 }
 
+/* reference "ghost" pill */
 .btn-secondary {
-  background: transparent;
-  color: var(--color-cream);
-  border-color: var(--color-cream);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-white);
+  border-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
 }
 
 .btn-secondary:hover {
-  background: var(--color-cream);
-  color: var(--color-chocolate);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--color-white);
+  transform: translateY(-3px);
 }
 
 .btn-whatsapp {
@@ -162,6 +246,7 @@ p {
 
 .btn-whatsapp:hover {
   background: #1fb958;
+  transform: translateY(-2px);
 }
 
 .btn-full {
@@ -181,6 +266,15 @@ p {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .section-header-split {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
 }
 
 @media (max-width: 640px) {

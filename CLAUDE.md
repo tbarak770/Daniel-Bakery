@@ -23,7 +23,8 @@ WhatsApp מוכנה מראש לדניאל, שמתאם תשלום ידנית לא
 5. **אחסון:** GitHub Pages, דרך `.github/workflows/deploy.yml` (build אוטומטי
    בכל push ל-`main`). `vite.config.ts` משתמש ב-`base: './'` (נתיבים יחסיים)
    כדי לעבוד תחת כל תת-נתיב ריפו בלי תלות בשם הריפו
-6. **פונט:** Assistant (Google Fonts, נטען ב-`index.html`)
+6. **פונטים:** Heebo (כותרות 900 + טקסט) ו-Frank Ruhl Libre (ציטוט), Google
+   Fonts ב-`index.html`. (Assistant הוחלף ב-02/10/2026.)
 7. **מספר וואטסאפ:** `972547887754` — מוגדר במקום אחד בלבד:
    `src/config/siteConfig.ts` (`whatsappNumber`)
 8. **לוגו:** אין לוגו גרפי — טיפוגרפיה בלבד ("Daniel Bakery" + "דניאל בייקרי")
@@ -34,44 +35,38 @@ WhatsApp מוכנה מראש לדניאל, שמתאם תשלום ידנית לא
 10. **אתר חי:** `https://tbarak770.github.io/Daniel-Bakery/` (GitHub Pages,
     `build_type: workflow`, מופעל דרך API)
 
-## פלטת צבעים וטיפוגרפיה — ערכת נושא כהה/יוקרתית (עודכן 01/10/2026)
+## שפת עיצוב — אימוץ מלא של crussant.vercel.app (עודכן 02/10/2026)
 
-האתר **כולו** עבר לערכת נושא כהה ("אחיד והומוגני" ברוח `CinematicHero`/
-`CakeZoomCinematic`) - לא רק הסקשנים הקולנועיים. כלל מנחה שחשוב לשמר בכל
-שינוי עתידי:
+המשתמש ביקש לאמץ את **כל** עקרונות העיצוב של https://crussant.vercel.app/
+כולל צבעים. הערכים נלקחו ישירות מה-CSS של הרפרנס (לא הערכה). זה **מחליף**
+את ערכת "זהב על כהה" הקודמת ואת הכלל "משטחי תוכן קנייתי נשארים בהירים" -
+עכשיו **הכל כהה**, כולל כרטיסי מוצר, עגלה וטופס (משטחי זכוכית).
 
-- **"Chrome" של האתר** (רקע `body`, `Header`, `MobileMenu`, `Footer`, כל
-  הסקשנים הקולנועיים/וידאו, `CtaBanner`, scrim של `CategoryShowcase`,
-  `.altBg`) → **כהה** (`--color-ink`/`--color-ink-light`), טקסט
-  `--color-cream`/`--color-cream-70`.
-- **משטחי "תוכן קנייתי"** (`ProductCard`, `CartDrawer`+`CartLineItem`,
-  `OrderForm` inputs, כרטיסי `.value` ב-`AboutPage`, `.tab` ב-`ProductsPage`)
-  → **נשארים בהירים בכוונה** (קרם/לבן), כמו "תכשיט על בד כהה" - כדי לשמור
-  על קריאות/אמון בקנייה ועקביות עם תמונות המוצרים (רקע ניטרלי/בהיר).
-  בתוך המשטחים האלה הטקסט **נשאר** `--color-chocolate`/`--color-chocolate-70`
-  כרגיל.
-
-**טוקני CSS** ב-`src/index.css`:
-`--color-ink` (#140c08, רקע כהה ראשי - זהה לגוון ה-overlay הכמעט-שחור
-שכבר שימש בסקשנים הקולנועיים), `--color-ink-light` (#1f1510, גוון כהה
-משני ל"קצב" בין סקשנים), `--color-cream`/`--color-cream-dark` (משטחים
-בהירים), `--color-cream-70` (טקסט מעומעם **על רקע כהה**),
-`--color-chocolate`/`--color-chocolate-70` (טקסט/גבול **רק בתוך משטחים
-בהירים** כעת - לא רקע ראשי יותר), `--color-gold`/`--color-gold-light`
-(מבטא/CTA). `color-scheme: dark` גלובלי, אבל `.field input`/`textarea`
-ב-`OrderForm.module.css` מקבלים `color-scheme: light` נקודתי (כי הם
-משטח בהיר עם native date-picker וכו').
-
-**כפתורים:** `.btn-primary` = זהב/טקסט שוקולד (לא שוקולד/לבן כמו קודם).
-`.btn-secondary` = גבול/טקסט קרם (לא שוקולד). פונט `Assistant` בלבד.
-
-**gotcha אמיתי שנתקלנו בו בזמן המעבר:** כל אלמנט טקסט שהסתמך על **ירושת**
-צבע ברירת המחדל של `body` (בלי `color` מפורש) בתוך כרטיס/פאנל **בהיר**
-(כמו `ProductCard .qty`, `CartLineItem .name`/`.qty`/`.lineTotal`,
-`CartDrawer .title`, `OrderForm .summaryItem`/`.summaryTotal`,
-`AboutPage .value h3`) - המשיך לרשת את ברירת המחדל החדשה (קרם) אחרי
-שהפכה את `body`, מה שהפך אותו לבלתי קריא על רקע בהיר. **תמיד לתת color
-מפורש לטקסט בתוך משטח בהיר, לא לסמוך על ירושה מ-`body`.**
+- **צבעים (`src/index.css`):** רקע `--color-ink` #0a0806; רקעי סקשנים
+  מתחלפים `--color-ground-1..4` (#080604 / #0d0a07 / #060403 / #090705) +
+  `--color-ground-footer` #050403, כל סקשן עם קו עליון `--hairline`. טקסט
+  `--color-cream` #f7ede8 / `--color-white`, משני `--color-text-70`/`-50`.
+  **הדגשה אחת: כתום `--color-accent` #ff8a1e** (hover `--color-accent-hover`
+  #ffa347, טקסט עליו `--color-on-accent` #110e0b, זוהר `--glow-accent`).
+  זכוכית: `--glass-bg`, `--glass-bg-strong`, `--glass-tint`, `--glass-border`.
+  הטוקנים הישנים (`--color-gold*`, `--color-chocolate*`, `--color-cream-dark`)
+  **נמחקו** - אין להשתמש בהם.
+- **טיפוגרפיה:** ברפרנס Outfit 900 + Plus Jakarta Sans, שניהם **בלי עברית**;
+  המקבילה: **Heebo** (`--font-display`/`--font-body`), כותרות 900,
+  line-height ~1, letter-spacing ‎-0.02em. ציטוט: **Frank Ruhl Libre**
+  (`--font-serif`, במקום Cormorant Garamond).
+- **רכיבים:** `.btn-primary` = גלולה כתומה עם זוהר והרמה; `.btn-secondary` =
+  גלולת ghost שקופה עם גבול לבן; `.eyebrow` = כתום, ריווח אותיות רחב;
+  `.section-header-split` = תגית+כותרת בצד אחד, תיאור בצד השני; כל `.section`
+  הוא `position:relative; z-index:20` עם רקע (כדי לגלוש מעל במות נעוצות).
+  `.btn-whatsapp` ירוק ואדום שגיאות נשארו (פונקציונליים).
+- **Header:** `position:fixed`, שקוף ו"צף" (רוחב 92%), wordmark "DANIEL
+  BAKERY" ב-900 (עדיין בלי לוגו גרפי), כפתורי עיגול זכוכית, גלולה כתומה
+  "להזמנה" שפותחת את העגלה, ורקע זכוכית אחרי גלילה של 40px. דפים פנימיים
+  מקבלים `padding-top: var(--header-offset)` (96px) כי ההדר כבר לא בזרימה.
+  z-index: הדר 100, תפריט מובייל 160, עגלה 170, מסך טעינה 9999.
+- **לא אומצו בכוונה** (החלטות משתמש): קונפיגורטור "Build Your Masterpiece"
+  (המוצרים קבועים) וניוזלטר במייל (אין שרת) - בפוטר הוחלף בעמודת וואטסאפ.
 
 ## מבנה הקוד
 
@@ -84,11 +79,13 @@ src/
   utils/asset.ts             asset(path) — עוטף import.meta.env.BASE_URL לנתיבי public/
   utils/format.ts            formatPrice, todayIsoDate, isoToDisplayDate (DD/MM/YYYY)
   utils/whatsapp.ts          buildWhatsappUrl — בונה את הודעת ה-wa.me
-  utils/scrollCrossfade.ts   מתמטיקת crossfade+Ken Burns משותפת (CinematicHero + CakeZoomCinematic)
-  utils/framePreloader.ts    טעינה מוקדמת + decode של רצף פריימים לקנבס (CroissantScrollSequence)
-  components/icons.tsx       כל אייקוני ה-SVG המשותפים
+  utils/scrollCrossfade.ts   מתמטיקת crossfade+Ken Burns (CinematicHero) + clamp01
+  utils/framePreloader.ts    טעינה מוקדמת + decode של רצף פריימים לקנבס + מונה התקדמות (CroissantScrollSequence)
+  components/icons.tsx       כל אייקוני ה-SVG המשותפים (כולל Instagram/Facebook)
   components/layout/         Header, MobileMenu, Footer, FloatingWhatsAppButton
-  components/home/           CroissantScrollSequence (ראשון בדף הבית, כל המכשירים), Hero, CinematicHero (דסקטופ בלבד), CakeZoomCinematic/CakeZoomMobile, CategoryShowcase, ProductsSection (Best Sellers + Featured), VideoStrip, AboutPreview, Gallery, CtaBanner
+  components/home/           סדר בדף הבית: CroissantScrollSequence (+LoadingScreen) → CategoryShowcase →
+                             ProductsSection ×2 → AboutPreview (מסגרת עגולה) → QuoteSection → Gallery →
+                             CinematicHero (דסקטופ) / CookieStoryMobile (טלפון), שניהם מסתיימים ב-LastBite
   components/product/        ProductCard, ProductGrid
   components/cart/           CartDrawer (שני שלבים: cart → form), CartLineItem, OrderForm
   components/ScrollToTop.tsx  מאפס גלילה ל-(0,0) בכל שינוי route
@@ -112,18 +109,17 @@ src/
 - **ולידציה בטופס:** הודעות שגיאה בעברית מנוהלות ידנית ב-state (לא הודעות
   ברירת מחדל של הדפדפן, שהיו מופיעות בשפת המערכת ולא בעברית). שגיאה נעלמת
   אוטומטית ברגע שהשדה נערך.
-- **רצועת הוידאו (`VideoStrip.tsx`):** `public/videos/hero-strip.{mp4,webm}` +
-  `hero-strip-poster.jpg` — הורכבו מ-4 קליפים חופשיים מ-Pexels (ganache, עוגיות,
-  piping, חיתוך עוגה) עם ffmpeg (xfade + color grade עקבי, ~10 שניות בלופ).
-  ffmpeg עצמו **אינו** תלות של הפרויקט — הורד כ-binary נייד חד-פעמי לצורך
-  העיבוד בלבד ואינו נדרש ל-build/dev הרגילים. הרכיב טוען את הוידאו רק
-  כשמתקרבים אליו בגלילה (IntersectionObserver), לפני כן מוצגת רק תמונת פוסטר.
+- **נמחקו ב-02/10/2026 (לבקשת המשתמש):** סקשן "הצלילה לעוגה"
+  (`CakeZoomCinematic`/`CakeZoomMobile` + `public/images/cake-zoom`), רצועת
+  הווידאו (`VideoStrip` + `public/videos`, 7.4MB), `CtaBanner` (הוחלף ב-
+  `LastBite` בסוף סיפור העוגייה), ו-`Hero` הסטטי (+`public/images/hero`) -
+  הקרואסון הוא הפתיחה בכל המכשירים. נשארים בהיסטוריית git אם יידרשו.
 - **תמונות דניאל האמיתיות:** `public/images/daniel/daniel-{portrait,piping,mixing}.jpg`
-  — כולן פורטרט (לא landscape!). `daniel-portrait` בעמוד האודות (הירו) +
-  רצועת `daniel-piping`/`daniel-mixing` מתחת. `daniel-mixing`/`daniel-piping`
-  **גם** בגלריית דף הבית (`Gallery.tsx`, מיקומים 1+4 במערך - התאים ה"גבוהים"
-  במוזאיקה). `AboutPreview.tsx` בדף הבית **עדיין** משתמש בתמונת ה-stock
-  הגנרית (`images/about/about.jpg`) ולא הוחלף בכוונה (מחוץ להיקף שאושר).
+  — כולן פורטרט (לא landscape!). `daniel-portrait` בעמוד האודות (הירו) **וגם**
+  במסגרת העגולה של `AboutPreview` בדף הבית; רצועת `daniel-piping`/
+  `daniel-mixing` בעמוד האודות, ושתיהן **גם** בגלריית דף הבית (`Gallery.tsx`,
+  מיקומים 1+4 במערך - התאים ה"גבוהים" במוזאיקה). `images/about/about.jpg`
+  כבר לא בשימוש בדף הבית.
 - **CSS padding shorthand + `.container`:** כל פעם שרכיב מקבל גם `container`
   וגם מחלקת CSS-module משלו על אותו אלמנט (`className={`container ${styles.x}`}`),
   אסור להשתמש ב-shorthand `padding: A B C` / `padding: A B` על אותה מחלקה -
@@ -136,7 +132,11 @@ src/
   לעקוף/לאפס חוקי `:nth-child(N)` ספציפיים ל-breakpoint אחר, להשתמש ב-
   `.item:nth-child(n)` (מתאים לכל הילדים, specificity שווה) ולא ב-`.item`
   לבד. ראה `Gallery.module.css`.
-- **`CinematicHero.tsx` (דסקטופ בלבד, `min-width: 900px`):** חוויית
+- **`CinematicHero.tsx` (דסקטופ בלבד, `min-width: 900px`; מ-02/10/2026
+  הוא הסקשן ה**אחרון** בדף הבית, לא הפתיחה, ומסתיים ב-`LastBite` - "ביס
+  אחד / ואתם מכורים." בסגנון "THE LAST BITE" של הרפרנס. בטלפון:
+  `CookieStoryMobile` - אותן 6 תמונות כמצגת crossfade + `LastBite`. הטקסט
+  ההיסטורי שלהלן על "מחליף את Hero+VideoStrip" כבר לא רלוונטי):** חוויית
   scroll-scrubbing מבוססת **6 תמונות סטילס** (לא וידאו!) שהמשתמש סיפק
   בעצמו - סדרה עקבית ויזואלית (AI-generated, רקע שחור, משטח שיש כהה, תאורה
   חמה זהה) שמספרת סיפור אחד אמיתי ומחובר: קמח+ביצה → קקאו+שוקולד → בתנור →
@@ -159,21 +159,14 @@ src/
   `.captionArea` להתכווץ לרוחב ה-eyebrow הקטן בלבד (~146px) במקום 820px,
   וכל הכיתוב "נדחס" לשורות קצרות. התיקון: `width:100%` מפורש בנוסף
   ל-`max-width` על אלמנט flex עם `align-items:center`.
-- **`CakeZoomCinematic.tsx`/`CakeZoomMobile.tsx` (סקשן קולנועי שני, באמצע
-  דף הבית, בין "מוצרים נבחרים" ל"הסיפור שלנו"):** אותו רעיון כמו
-  `CinematicHero` אבל **בלי שום טקסט/UI** - חוויה ויזואלית טהורה של "צלילה"
-  לתוך עוגת שוקולד (6 תמונות סטילס שהמשתמש סיפק,
-  `public/images/cake-zoom/photo-01.webp`...`photo-06.webp`, ~1.1MB).
-  בדסקטופ: אותה טכניקת scroll-scrubbing (`wrapper 300vh` + 6 `<img>`
-  חופפים + Ken Burns עד 1.10). **במובייל: לא scroll-scrubbing** - סליידשואו
-  אוטומטי פשוט (crossfade כל 2.8 שניות, `setInterval`, בלי sticky/גלילה)
-  כי scroll-scrub כבד מדי לביצועי מובייל. מתמטיקת ה-crossfade/זום הופקה
-  מ-`CinematicHero` לקובץ משותף `src/utils/scrollCrossfade.ts` (שני
-  הרכיבים משתמשים בו). gotcha: קבצי המקור מהמשתמש הגיעו עם שמות
-  לא-רציפים (`1,2,3,4,6.png` + קובץ UUID) - הסדר החזותי הנכון (לפי תוכן,
-  לא שם) היה `1,2,3,4,6.png,UUID.png` - "6.png" היה בפועל הפריים החמישי
-  (האור מופיע) וקובץ ה-UUID היה הפריים האחרון/הסיום (העוגה חתוכה). תמיד
-  לבדוק תוכן חזותי בפועל, לא לסמוך על שם קובץ.
+- **לקח מקבצי תמונות של המשתמש:** בעבר הגיעו קבצים עם שמות לא-רציפים
+  (`1,2,3,4,6.png` + קובץ UUID) שהסדר החזותי האמיתי שלהם היה שונה מהשמות.
+  תמיד לבדוק תוכן חזותי בפועל (contact sheet), לא לסמוך על שם קובץ.
+- **`LoadingScreen` (דף הבית בלבד):** מוצג מעל הקרואסון בכניסה הראשונה, עם
+  התקדמות טעינת הפריימים (`onProgress` ב-`framePreloader`, סופר גם פריימים
+  שנכשלו כדי שלא ייתקע), נעלם בעמעום בסיום או אחרי 6 שניות לכל היותר. דגל
+  מודול `framesLoadedOnce` מונע הצגה חוזרת בניווט חוזר לדף הבית. לא מוצג עם
+  reduced motion.
 - **`CroissantScrollSequence.tsx` (הסקשן הראשון בדף הבית, לפני `CinematicHero`/
   `Hero`, בכל המכשירים):** שחזור אפקט הקרואסון של crussant.vercel.app - קרואסון
   שנאפה מבצק נא ל-hero shot זהוב, כשמיקום הגלילה = הפריים (קדימה/אחורה, עוצר
@@ -227,7 +220,12 @@ npx oxlint          # lint
 מובייל (תפריט המבורגר, גלילה בניווט, מוזאיקת גלריה), וחוויית ה-scroll-scrubbing
 הקולנועית בדסקטופ (`CinematicHero`) — כולם הושלמו, נבדקו חזותית (Playwright
 headless, desktop + מובייל 390px), ונדחפו בהצלחה לאתר החי ב-GitHub Pages.
-נוספו מאז: סקשן הצלילה לעוגה, ערכת הנושא הכהה, ואפקט הקרואסון בגלילה
-(`CroissantScrollSequence`, נבדק בדסקטופ/טאבלט/מובייל כולל גלילה הפוכה,
-resize ו-reduced motion). תוכנית "עיצוב כתום בסגנון crussant לכל האתר" נדונה
-ו**בוטלה** - המשתמש רצה רק את אפקט הקרואסון, לא שינוי עיצוב כללי.
+נוספו מאז: אפקט הקרואסון בגלילה (`CroissantScrollSequence`, כויל מול
+crussant), ובשלב הבא (02/10/2026) **אימוץ מלא של שפת העיצוב של crussant**
+לכל האתר (ראו "שפת עיצוב" למעלה) + סידור מחדש של דף הבית (עוגה ווידאו
+נמחקו, העוגייה ירדה לתחתית, נוספו ציטוט ומסך טעינה).
+
+**השלב הבא שהמשתמש הודיע עליו:** הוא יעלה **80 פריימים חדשים** לקרואסון
+(כמו 80 הפריימים של הרפרנס). כשיגיעו: לייצא אותם (`FRAME_COUNT`), לעבור
+למיפוי הלינארי של הרפרנס (`floor(p*80)`, מסלול 4000px), ולצמצם/לבטל את
+המצלמה הווירטואלית (`CAMERA_KEYS`) אם תנועת המצלמה כבר "אפויה" בפריימים.

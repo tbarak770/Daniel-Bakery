@@ -39,9 +39,10 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="section">
+    <div className={`section ${styles.page}`}>
       <div className="container">
         <div className={styles.header}>
+          <span className="eyebrow">התפריט של דניאל</span>
           <h1>כל המוצרים</h1>
           <p>עוגות, עוגיות וקינוחים - הכל נאפה טרי ובאהבה</p>
         </div>

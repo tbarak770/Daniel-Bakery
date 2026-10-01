@@ -1,14 +1,11 @@
 import AboutPreview from '../components/home/AboutPreview'
-import CakeZoomCinematic from '../components/home/CakeZoomCinematic'
-import CakeZoomMobile from '../components/home/CakeZoomMobile'
 import CategoryShowcase from '../components/home/CategoryShowcase'
 import CinematicHero from '../components/home/CinematicHero'
+import CookieStoryMobile from '../components/home/CookieStoryMobile'
 import CroissantScrollSequence from '../components/home/CroissantScrollSequence'
-import CtaBanner from '../components/home/CtaBanner'
 import Gallery from '../components/home/Gallery'
-import Hero from '../components/home/Hero'
 import ProductsSection from '../components/home/ProductsSection'
-import VideoStrip from '../components/home/VideoStrip'
+import QuoteSection from '../components/home/QuoteSection'
 import { products } from '../data/products'
 import { useIsDesktop } from '../hooks/useIsDesktop'
 
@@ -21,15 +18,26 @@ export default function HomePage() {
   return (
     <>
       <CroissantScrollSequence />
-      {isDesktop ? <CinematicHero /> : <Hero />}
       <CategoryShowcase />
-      <ProductsSection eyebrow="הכי אהובים" title="מומלצים ביותר" products={bestSellers} altBg />
-      <ProductsSection eyebrow="בחירה שלנו" title="מוצרים נבחרים" products={featured} />
-      {isDesktop ? <CakeZoomCinematic /> : <CakeZoomMobile />}
-      {!isDesktop && <VideoStrip />}
+      <ProductsSection
+        eyebrow="הכי אהובים"
+        title="מומלצים ביותר"
+        description="המאפים שהלקוחות חוזרים אליהם שוב ושוב. נאפים טריים, בעבודת יד."
+        products={bestSellers}
+        ground={2}
+      />
+      <ProductsSection
+        eyebrow="בחירה שלנו"
+        title="מוצרים נבחרים"
+        description="עוד כמה מהדברים הטובים שיוצאים מהתנור של דניאל."
+        products={featured}
+        ground={1}
+      />
       <AboutPreview />
+      <QuoteSection />
       <Gallery />
-      <CtaBanner />
+      {/* the cookie story closes the page, like the reference's "last bite" */}
+      {isDesktop ? <CinematicHero /> : <CookieStoryMobile />}
     </>
   )
 }

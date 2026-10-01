@@ -8,13 +8,18 @@ const CATEGORIES = [
   { name: 'קינוחים', image: 'images/categories/desserts.jpg' },
 ] as const
 
+// First section after the croissant opening: it slides up over the pinned
+// final frame (.section is position:relative + z-index above the stage).
 export default function CategoryShowcase() {
   return (
     <section className="section">
       <div className="container">
-        <div className="section-heading">
-          <span className="eyebrow">הקטגוריות שלנו</span>
-          <h2>בחרו לפי מה שמתחשק לכם</h2>
+        <div className="section-header-split">
+          <div>
+            <span className="eyebrow">הקטגוריות שלנו</span>
+            <h2>בחרו לפי מה שמתחשק לכם</h2>
+          </div>
+          <p>עוגות, עוגיות וקינוחים שנאפים בעבודת יד, טריים ומוכנים במיוחד בשבילכם.</p>
         </div>
         <div className={styles.grid}>
           {CATEGORIES.map((cat) => (

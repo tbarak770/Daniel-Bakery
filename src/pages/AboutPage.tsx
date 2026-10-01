@@ -4,7 +4,7 @@ import styles from './AboutPage.module.css'
 
 export default function AboutPage() {
   return (
-    <div>
+    <div className={styles.page}>
       <div className={`container ${styles.hero}`}>
         <span className="eyebrow">הסיפור שלנו</span>
         <h1>Daniel Bakery | דניאל בייקרי</h1>
@@ -16,6 +16,7 @@ export default function AboutPage() {
           <img src={asset('images/daniel/daniel-portrait.jpg')} alt="דניאל, האופה של Daniel Bakery" loading="lazy" />
         </div>
         <div className={styles.text}>
+          <span className="eyebrow">מאיפה זה התחיל</span>
           <h2>איך הכל התחיל</h2>
           <p>
             דניאל בייקרי נולד מתוך תשוקה אמיתית לאפייה, שהתחילה בבית המשפחה בין קערות בצק, תבניות אפייה וריח של
@@ -44,20 +45,23 @@ export default function AboutPage() {
       <div className="container">
         <div className={styles.values}>
           <div className={styles.value}>
+            <span className={styles.valueNum}>01</span>
             <h3>איכות ללא פשרות</h3>
             <p>מרכיבים נבחרים ותהליך אפייה קפדני בכל מוצר, מהמתכון ועד להגשה.</p>
           </div>
           <div className={styles.value}>
+            <span className={styles.valueNum}>02</span>
             <h3>אפייה טרייה</h3>
             <p>כל הזמנה מוכנה במיוחד עבורכם, קרוב ככל האפשר למועד האספקה שביקשתם.</p>
           </div>
           <div className={styles.value}>
+            <span className={styles.valueNum}>03</span>
             <h3>יחס אישי</h3>
             <p>ההזמנה מתואמת ישירות מולנו בוואטסאפ, כדי שתקבלו בדיוק את מה שרציתם.</p>
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', paddingBottom: 60 }}>
+        <div className={styles.cta}>
           <Link to="/products" className="btn btn-primary">
             לכל המוצרים
           </Link>

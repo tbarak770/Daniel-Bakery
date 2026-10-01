@@ -2,15 +2,21 @@ import { Link } from 'react-router-dom'
 import { asset } from '../../utils/asset'
 import styles from './AboutPreview.module.css'
 
+// Split layout after the reference's "atelier" section: round photo frame with a
+// glass chip, text on the other side.
 export default function AboutPreview() {
   return (
-    <section className="section">
+    <section className={`section ${styles.section}`}>
       <div className={`container ${styles.wrap}`}>
-        <div className={styles.imageWrap}>
-          <img src={asset('images/about/about.jpg')} alt="אפייה ביתית באהבה" loading="lazy" />
+        <div className={styles.frame}>
+          <img src={asset('images/daniel/daniel-portrait.jpg')} alt="דניאל במטבח" loading="lazy" />
+          <span className={styles.chip}>
+            <span className={styles.dot} aria-hidden="true" />
+            נאפה בעבודת יד
+          </span>
         </div>
         <div className={styles.text}>
-          <span className={styles.eyebrow}>הסיפור שלנו</span>
+          <span className="eyebrow">הסיפור שלנו</span>
           <h2>נאפה באהבה, בבית, בכל פעם מחדש</h2>
           <p>
             דניאל בייקרי נולד מתוך אהבה אמיתית לאפייה. כל מוצר נאפה בקפידה, מרכיבים איכותיים ומתכונים שחוזרים על

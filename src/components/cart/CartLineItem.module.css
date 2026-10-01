@@ -2,15 +2,19 @@
   display: flex;
   gap: 14px;
   align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--glass-tint);
+  border: 1px solid var(--glass-border);
 }
 
 .imageWrap {
-  width: 72px;
-  height: 72px;
+  width: 68px;
+  height: 68px;
   border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--color-cream-dark);
+  background: #110e0b;
 }
 
 .imageWrap img {
@@ -25,14 +29,14 @@
 }
 
 .name {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.98rem;
-  color: var(--color-chocolate);
+  color: var(--color-white);
 }
 
 .price {
-  color: var(--color-chocolate-70);
-  font-size: 0.88rem;
+  color: var(--color-text-50);
+  font-size: 0.85rem;
   margin-top: 2px;
 }
 
@@ -47,7 +51,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--color-cream-dark);
+  background: var(--color-accent-soft);
+  border: 1px solid rgba(255, 138, 30, 0.5);
   border-radius: 999px;
   padding: 3px;
 }
@@ -57,44 +62,45 @@
   height: 26px;
   border-radius: 999px;
   border: none;
-  background: var(--color-white);
-  color: var(--color-chocolate);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .stepBtn:hover {
-  background: var(--color-gold-light);
+  background: var(--color-accent-hover);
 }
 
 .qty {
   min-width: 16px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.9rem;
-  color: var(--color-chocolate);
+  color: var(--color-white);
 }
 
 .removeBtn {
   border: none;
   background: transparent;
-  color: var(--color-chocolate-70);
+  color: var(--color-text-50);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 30px;
   height: 30px;
   border-radius: 999px;
+  transition: all 0.2s ease;
 }
 
 .removeBtn:hover {
-  background: rgba(59, 36, 23, 0.08);
-  color: var(--color-chocolate);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
 }
 
 .lineTotal {
-  font-weight: 800;
+  font-weight: 900;
   white-space: nowrap;
-  color: var(--color-chocolate);
+  color: var(--color-white);
 }
