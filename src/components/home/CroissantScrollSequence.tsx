@@ -7,11 +7,12 @@ import LoadingScreen from './LoadingScreen'
 import styles from './CroissantScrollSequence.module.css'
 
 /*
- * Scroll-scrubbed croissant shot: 67 frames, one frame on screen at a time,
- * scroll position = frame (no crossfade, no smoothing, no scroll hijacking).
- * The frames themselves carry the camera move (push-in while proofing/baking,
- * pull-out to the wide hero shot); the code only stabilises, adds a micro
- * heat-shake at the baking peak and a faint warm glow. See CLAUDE.md.
+ * Scroll-scrubbed croissant shot: 67 frames driven by the scroll position (no
+ * scroll hijacking). The frames carry the camera move (push-in while proofing/
+ * baking, pull-out to the wide hero shot). For a film-like feel the shown
+ * position eases after the wheel and adjacent frames dissolve by the exact
+ * fractional position; at rest it settles on a whole frame. The code also
+ * stabilises each frame and adds a faint warm glow. See CLAUDE.md.
  */
 const FRAME_COUNT = 67
 const FRAME_ASPECT = 16 / 9
@@ -58,21 +59,19 @@ function rangeProgress(value: number, from: number, to: number) {
   return clamp01((value - from) / (to - from))
 }
 
-// Heat shake at the baking peak, frames 19-29 (indices 18-28): deterministic,
-// <= 1px / 0.7px / 0.03deg, eased in and out, exactly zero outside the range.
-function shakeFor(index: number) {
-  if (index < 18 || index > 28) return { x: 0, y: 0, rot: 0 }
-  const env = easeInOut(Math.sin(Math.PI * rangeProgress(index, 18, 28)))
-  return {
-    x: Math.sin(index * 1.7) * env * 1.0,
-    y: Math.sin(index * 2.1) * env * 0.7,
-    rot: ((Math.sin(index * 1.3) * env * 0.03) * Math.PI) / 180,
-  }
-}
+// Film-like motion (user request: no stepping, no shake):
+// - the shown position eases toward the scroll position (wheel notches jump
+//   ~1.5 frames at once; easing turns them into continuous motion)
+// - between two frames the next one dissolves in by the exact fractional
+//   position, each drawn with its own stabilisation so the two line up
+// - once scrolling stops the shown position settles on a whole, crisp frame
+const EASE_MS = 140
+const IDLE_SNAP_MS = 160
 
 // Warm glow: rises from frame 9, peaks at frames 20-25, gone by frame 35.
-function glowFor(index: number) {
-  const f = index + 1
+// Takes the fractional frame position so it changes smoothly too.
+function glowFor(pos: number) {
+  const f = pos + 1
   if (f <= 9 || f >= 35) return 0
   if (f < 20) return 0.12 * easeInOut(rangeProgress(f, 9, 20))
   if (f <= 25) return 0.12
@@ -153,33 +152,45 @@ export default function CroissantScrollSequence() {
     let vh = 0
     let box: Box = { x: 0, y: 0, w: 0, h: 0 }
     let frames: FrameSet | null = null
-    let drawnIndex = -1
+    let shown = -1 // displayed frame position (fractional), eases toward the scroll
+    let drawnKey = ''
+    let lastScrollAt = 0
+    let lastFrameAt = 0
     let lastScrollY = window.scrollY
-    let lastTime = performance.now()
     let speed = 0
     let loaded = 0
 
-    function draw(index: number) {
-      if (!frames || !ctx) return
-      const ready = nearestReadyFrame(frames, index)
-      if (ready === -1) return
-      drawnIndex = index
-
-      const [a, bx, by] = CAMERA_CORRECTION[ready]
-      const shake = reduced ? { x: 0, y: 0, rot: 0 } : shakeFor(ready)
+    // one frame, drawn with its own stabilisation correction
+    function drawFrame(index: number, alpha: number) {
+      const [a, bx, by] = CAMERA_CORRECTION[index]
       const s = OVERSCAN * a
       const w = box.w * s
       const h = box.h * s
-      const cx = box.x + box.w / 2 + bx * box.w + shake.x
-      const cy = box.y + box.h / 2 + by * box.w + shake.y
+      ctx!.globalAlpha = alpha
+      ctx!.drawImage(frames!.images[index], box.x + box.w / 2 + bx * box.w - w / 2, box.y + box.h / 2 + by * box.w - h / 2, w, h)
+      ctx!.globalAlpha = 1
+      return { cy: box.y + box.h / 2 + by * box.w, h }
+    }
+
+    function draw(pos: number) {
+      if (!frames || !ctx) return
+      const lo = Math.min(FRAME_COUNT - 1, Math.floor(pos))
+      const base = nearestReadyFrame(frames, lo)
+      if (base === -1) return
+      const hi = Math.min(FRAME_COUNT - 1, lo + 1)
+      // dissolve amount into the next frame (only when both are really loaded).
+      // smoothstep: passes quickly through the 50/50 mix, where two AI frames
+      // with slightly different outlines would read as a double edge
+      const t = pos - lo
+      const mix = base === lo && hi !== lo && frames.ready[hi] ? t * t * (3 - 2 * t) : 0
+      const key = `${vw}x${vh}|${base}|${mix.toFixed(3)}`
+      if (key === drawnKey) return
+      drawnKey = key
 
       ctx.fillStyle = ink
       ctx.fillRect(0, 0, vw, vh)
-      ctx.save()
-      ctx.translate(cx, cy)
-      if (shake.rot) ctx.rotate(shake.rot)
-      ctx.drawImage(frames.images[ready], -w / 2, -h / 2, w, h)
-      ctx.restore()
+      const { cy, h } = drawFrame(base, 1)
+      if (mix > 0.002) drawFrame(hi, mix)
 
       // portrait band: the photo's top/bottom edges dissolve into the ground
       if (box.h < vh - 1) {
@@ -195,7 +206,7 @@ export default function CroissantScrollSequence() {
         }
       }
 
-      if (glowRef.current) glowRef.current.style.opacity = reduced ? '0' : glowFor(ready).toFixed(3)
+      if (glowRef.current) glowRef.current.style.opacity = reduced ? '0' : glowFor(pos).toFixed(3)
     }
 
     function applyText(p: number) {
@@ -231,26 +242,44 @@ export default function CroissantScrollSequence() {
     function tick(now: number) {
       rafRef.current = null
       const progress = reduced ? 1 : readProgress()
-      const frameIndex = Math.min(FRAME_COUNT - 1, Math.max(0, Math.round(progress * (FRAME_COUNT - 1))))
-      if (frameIndex !== drawnIndex) draw(frameIndex)
-      applyText(reduced ? 0.9 : progress)
+      const last = FRAME_COUNT - 1
+      let target = progress * last
+      const idle = now - lastScrollAt > IDLE_SNAP_MS
+      // at rest, settle on a whole frame so the still image is crisp
+      if (idle) target = Math.round(target)
+
+      const dt = lastFrameAt ? Math.min(64, now - lastFrameAt) : 16
+      lastFrameAt = now
+      if (shown < 0 || reduced) shown = target
+      else shown += (target - shown) * (1 - Math.exp(-dt / EASE_MS))
+      if (Math.abs(target - shown) < 0.002) shown = target
+
+      draw(shown)
+      applyText(reduced ? 0.9 : shown / last)
 
       if (debugRef.current) {
-        const dt = Math.max(1, now - lastTime)
-        speed = speed * 0.7 + ((window.scrollY - lastScrollY) / dt) * 1000 * 0.3
+        speed = speed * 0.7 + ((window.scrollY - lastScrollY) / Math.max(1, dt)) * 1000 * 0.3
         lastScrollY = window.scrollY
-        lastTime = now
         debugRef.current.textContent =
-          `frame    ${String(frameIndex + 1).padStart(3, '0')} / ${FRAME_COUNT}\n` +
+          `frame    ${String(Math.round(shown) + 1).padStart(3, '0')} / ${FRAME_COUNT}  (pos ${(shown + 1).toFixed(2)})\n` +
           `progress ${progress.toFixed(4)}\n` +
           `speed    ${Math.round(speed)} px/s\n` +
           `loaded   ${loaded} / ${FRAME_COUNT}\n` +
           `canvas   ${canvas!.width} x ${canvas!.height}`
       }
+
+      // keep animating while easing, and until the idle snap has happened
+      if (shown !== target || !idle) rafRef.current = requestAnimationFrame(tick)
+      else lastFrameAt = 0
     }
 
     function requestTick() {
       if (rafRef.current === null) rafRef.current = requestAnimationFrame(tick)
+    }
+
+    function onScroll() {
+      lastScrollAt = performance.now()
+      requestTick()
     }
 
     function resize() {
@@ -263,15 +292,17 @@ export default function CroissantScrollSequence() {
       ctx!.imageSmoothingEnabled = true
       ctx!.imageSmoothingQuality = 'high'
       box = baseBox(vw, vh)
-      if (drawnIndex >= 0) draw(drawnIndex)
+      drawnKey = ''
+      if (shown >= 0) draw(shown)
     }
 
     const preload = preloadFrames(
       frameUrls(),
-      (i) => {
+      () => {
         loaded++
-        // first frame, or the frame the scroll is waiting for, just arrived
-        if (drawnIndex === -1 || i === drawnIndex) draw(drawnIndex === -1 ? 0 : drawnIndex)
+        // a newly loaded frame may be the one on screen (or its dissolve partner)
+        drawnKey = ''
+        if (shown >= 0) draw(shown)
         requestTick()
       },
       (settled, total) => {
@@ -292,12 +323,12 @@ export default function CroissantScrollSequence() {
     resize()
     requestTick()
 
-    window.addEventListener('scroll', requestTick, { passive: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('orientationchange', requestTick)
     return () => {
       preload.cancel()
       ro.disconnect()
-      window.removeEventListener('scroll', requestTick)
+      window.removeEventListener('scroll', onScroll)
       window.removeEventListener('orientationchange', requestTick)
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
       // reset so a remount (StrictMode) can schedule its own first tick
