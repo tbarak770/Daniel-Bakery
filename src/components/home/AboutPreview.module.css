@@ -25,11 +25,14 @@
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
+  /* portrait photo: keep the head inside the circle */
+  object-position: 50% 8%;
 }
 
+/* bottom of the circle: the portrait's face is in the upper half */
 .chip {
   position: absolute;
-  top: 1.5rem;
+  bottom: 1.8rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
