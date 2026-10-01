@@ -1,5 +1,5 @@
 .banner {
-  background: var(--color-chocolate);
+  background: var(--color-ink);
   border-radius: var(--radius-lg);
   padding: clamp(40px, 6vw, 70px);
   text-align: center;
@@ -12,7 +12,7 @@
 
 .banner p {
   margin-top: 14px;
-  color: rgba(251, 246, 237, 0.8);
+  color: var(--color-cream-70);
   font-size: 1.05rem;
 }
 
@@ -22,13 +22,4 @@
   justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
-}
-
-.actions :global(.btn-primary) {
-  background: var(--color-gold);
-  color: var(--color-chocolate);
-}
-
-.actions :global(.btn-primary):hover {
-  background: #d9b978;
 }

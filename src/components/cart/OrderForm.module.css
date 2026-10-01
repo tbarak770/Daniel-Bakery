@@ -27,6 +27,7 @@
   background: var(--color-white);
   outline: none;
   transition: border-color 0.2s ease;
+  color-scheme: light;
 }
 
 .field input:focus,
@@ -68,6 +69,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.9rem;
+  color: var(--color-chocolate);
 }
 
 .summaryTotal {
@@ -77,4 +79,5 @@
   border-top: 1px solid rgba(59, 36, 23, 0.15);
   margin-top: 4px;
   padding-top: 8px;
+  color: var(--color-chocolate);
 }

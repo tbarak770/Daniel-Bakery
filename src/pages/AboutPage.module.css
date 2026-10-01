@@ -7,7 +7,7 @@
 .hero p {
   max-width: 620px;
   margin: 14px auto 0;
-  color: var(--color-chocolate-70);
+  color: var(--color-cream-70);
   font-size: 1.05rem;
 }
 
@@ -59,7 +59,7 @@
 
 .text p {
   margin-top: 18px;
-  color: var(--color-chocolate-70);
+  color: var(--color-cream-70);
   font-size: 1.05rem;
   line-height: 1.85;
 }
@@ -81,6 +81,7 @@
 
 .value h3 {
   margin-bottom: 10px;
+  color: var(--color-chocolate);
 }
 
 .value p {

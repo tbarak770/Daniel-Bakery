@@ -7,13 +7,13 @@
 .empty {
   text-align: center;
   padding: 60px 20px;
-  color: var(--color-chocolate-70);
+  color: var(--color-cream-70);
 }
 
 .empty strong {
   display: block;
   font-size: 1.2rem;
-  color: var(--color-chocolate);
+  color: var(--color-cream);
   margin-bottom: 8px;
 }
 

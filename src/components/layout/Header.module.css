@@ -2,9 +2,9 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(251, 246, 237, 0.92);
+  background: rgba(20, 12, 8, 0.88);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(59, 36, 23, 0.08);
+  border-bottom: 1px solid rgba(251, 246, 237, 0.1);
 }
 
 .bar {
@@ -25,7 +25,7 @@
 .logoMain {
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--color-chocolate);
+  color: var(--color-cream);
 }
 
 .logoSub {
@@ -44,7 +44,7 @@
 .navLink {
   font-weight: 600;
   font-size: 0.98rem;
-  color: var(--color-chocolate-70);
+  color: var(--color-cream-70);
   padding: 6px 2px;
   position: relative;
 }
@@ -61,7 +61,7 @@
 }
 
 .navLink:hover {
-  color: var(--color-chocolate);
+  color: var(--color-cream);
 }
 
 .navLink:hover::after {
@@ -84,12 +84,12 @@
   border: none;
   background: transparent;
   border-radius: 999px;
-  color: var(--color-chocolate);
+  color: var(--color-cream);
   transition: background-color 0.2s ease;
 }
 
 .iconBtn:hover {
-  background: var(--color-cream-dark);
+  background: rgba(251, 246, 237, 0.1);
 }
 
 .badge {
@@ -132,13 +132,12 @@
   padding: 8px 4px;
   font-size: 0.95rem;
   font-family: inherit;
-  color: var(--color-chocolate);
+  color: var(--color-cream);
   outline: none;
 }
 
 .searchInput::placeholder {
-  color: var(--color-chocolate-70);
-  opacity: 0.6;
+  color: var(--color-cream-70);
 }
 
 .hamburger {

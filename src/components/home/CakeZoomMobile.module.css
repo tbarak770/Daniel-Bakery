@@ -3,7 +3,7 @@
   height: 60vh;
   min-height: 320px;
   overflow: hidden;
-  background: var(--color-chocolate);
+  background: var(--color-ink);
 }
 
 .photo {

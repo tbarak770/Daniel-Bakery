@@ -34,11 +34,44 @@ WhatsApp מוכנה מראש לדניאל, שמתאם תשלום ידנית לא
 10. **אתר חי:** `https://tbarak770.github.io/Daniel-Bakery/` (GitHub Pages,
     `build_type: workflow`, מופעל דרך API)
 
-## פלטת צבעים וטיפוגרפיה
+## פלטת צבעים וטיפוגרפיה — ערכת נושא כהה/יוקרתית (עודכן 01/10/2026)
 
-מוגדרים כמשתני CSS ב-`src/index.css`:
-`--color-cream`, `--color-cream-dark`, `--color-chocolate`, `--color-chocolate-70`,
-`--color-gold`, `--color-gold-light`. פונט `Assistant` בלבד.
+האתר **כולו** עבר לערכת נושא כהה ("אחיד והומוגני" ברוח `CinematicHero`/
+`CakeZoomCinematic`) - לא רק הסקשנים הקולנועיים. כלל מנחה שחשוב לשמר בכל
+שינוי עתידי:
+
+- **"Chrome" של האתר** (רקע `body`, `Header`, `MobileMenu`, `Footer`, כל
+  הסקשנים הקולנועיים/וידאו, `CtaBanner`, scrim של `CategoryShowcase`,
+  `.altBg`) → **כהה** (`--color-ink`/`--color-ink-light`), טקסט
+  `--color-cream`/`--color-cream-70`.
+- **משטחי "תוכן קנייתי"** (`ProductCard`, `CartDrawer`+`CartLineItem`,
+  `OrderForm` inputs, כרטיסי `.value` ב-`AboutPage`, `.tab` ב-`ProductsPage`)
+  → **נשארים בהירים בכוונה** (קרם/לבן), כמו "תכשיט על בד כהה" - כדי לשמור
+  על קריאות/אמון בקנייה ועקביות עם תמונות המוצרים (רקע ניטרלי/בהיר).
+  בתוך המשטחים האלה הטקסט **נשאר** `--color-chocolate`/`--color-chocolate-70`
+  כרגיל.
+
+**טוקני CSS** ב-`src/index.css`:
+`--color-ink` (#140c08, רקע כהה ראשי - זהה לגוון ה-overlay הכמעט-שחור
+שכבר שימש בסקשנים הקולנועיים), `--color-ink-light` (#1f1510, גוון כהה
+משני ל"קצב" בין סקשנים), `--color-cream`/`--color-cream-dark` (משטחים
+בהירים), `--color-cream-70` (טקסט מעומעם **על רקע כהה**),
+`--color-chocolate`/`--color-chocolate-70` (טקסט/גבול **רק בתוך משטחים
+בהירים** כעת - לא רקע ראשי יותר), `--color-gold`/`--color-gold-light`
+(מבטא/CTA). `color-scheme: dark` גלובלי, אבל `.field input`/`textarea`
+ב-`OrderForm.module.css` מקבלים `color-scheme: light` נקודתי (כי הם
+משטח בהיר עם native date-picker וכו').
+
+**כפתורים:** `.btn-primary` = זהב/טקסט שוקולד (לא שוקולד/לבן כמו קודם).
+`.btn-secondary` = גבול/טקסט קרם (לא שוקולד). פונט `Assistant` בלבד.
+
+**gotcha אמיתי שנתקלנו בו בזמן המעבר:** כל אלמנט טקסט שהסתמך על **ירושת**
+צבע ברירת המחדל של `body` (בלי `color` מפורש) בתוך כרטיס/פאנל **בהיר**
+(כמו `ProductCard .qty`, `CartLineItem .name`/`.qty`/`.lineTotal`,
+`CartDrawer .title`, `OrderForm .summaryItem`/`.summaryTotal`,
+`AboutPage .value h3`) - המשיך לרשת את ברירת המחדל החדשה (קרם) אחרי
+שהפכה את `body`, מה שהפך אותו לבלתי קריא על רקע בהיר. **תמיד לתת color
+מפורש לטקסט בתוך משטח בהיר, לא לסמוך על ירושה מ-`body`.**
 
 ## מבנה הקוד
 

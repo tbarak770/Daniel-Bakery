@@ -17,7 +17,7 @@
 
 .viewAll {
   font-weight: 700;
-  color: var(--color-chocolate);
+  color: var(--color-cream);
   border-bottom: 2px solid var(--color-gold);
   padding-bottom: 2px;
   white-space: nowrap;
@@ -30,7 +30,7 @@
 }
 
 .altBg {
-  background: var(--color-cream-dark);
+  background: var(--color-ink-light);
 }
 
 @media (max-width: 1024px) {

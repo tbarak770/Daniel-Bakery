@@ -4,7 +4,7 @@
 }
 
 .header p {
-  color: var(--color-chocolate-70);
+  color: var(--color-cream-70);
   margin-top: 10px;
 }
 
@@ -32,14 +32,14 @@
 }
 
 .tabActive {
-  background: var(--color-chocolate);
-  border-color: var(--color-chocolate);
-  color: var(--color-white);
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: var(--color-chocolate);
 }
 
 .searchNotice {
   text-align: center;
-  color: var(--color-chocolate-70);
+  color: var(--color-cream-70);
   margin-bottom: 24px;
 }
 

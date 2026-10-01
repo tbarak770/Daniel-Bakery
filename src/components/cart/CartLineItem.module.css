@@ -27,6 +27,7 @@
 .name {
   font-weight: 700;
   font-size: 0.98rem;
+  color: var(--color-chocolate);
 }
 
 .price {
@@ -72,6 +73,7 @@
   text-align: center;
   font-weight: 700;
   font-size: 0.9rem;
+  color: var(--color-chocolate);
 }
 
 .removeBtn {
@@ -94,4 +96,5 @@
 .lineTotal {
   font-weight: 800;
   white-space: nowrap;
+  color: var(--color-chocolate);
 }

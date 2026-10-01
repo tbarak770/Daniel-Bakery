@@ -1,6 +1,9 @@
 :root {
+  --color-ink: #140c08;
+  --color-ink-light: #1f1510;
   --color-cream: #fbf6ed;
   --color-cream-dark: #f2e8d8;
+  --color-cream-70: rgba(251, 246, 237, 0.7);
   --color-chocolate: #3b2417;
   --color-chocolate-70: #5a4131;
   --color-gold: #c9a25d;
@@ -12,10 +15,10 @@
   --container-width: 1200px;
   --radius-md: 14px;
   --radius-lg: 22px;
-  --shadow-soft: 0 10px 30px -12px rgba(59, 36, 23, 0.25);
-  --shadow-card: 0 4px 18px -6px rgba(59, 36, 23, 0.18);
+  --shadow-soft: 0 10px 30px -12px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 4px 18px -6px rgba(0, 0, 0, 0.35);
 
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 * {
@@ -34,8 +37,8 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--color-cream);
-  color: var(--color-chocolate);
+  background: var(--color-ink);
+  color: var(--color-cream);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -109,7 +112,7 @@ p {
 }
 
 .section-heading p {
-  color: var(--color-chocolate-70);
+  color: var(--color-cream-70);
   margin-top: 12px;
   font-size: 1.05rem;
 }
@@ -132,24 +135,24 @@ p {
 }
 
 .btn-primary {
-  background: var(--color-chocolate);
-  color: var(--color-white);
+  background: var(--color-gold);
+  color: var(--color-chocolate);
 }
 
 .btn-primary:hover {
-  background: #2a1810;
+  background: #d9b978;
   box-shadow: var(--shadow-soft);
 }
 
 .btn-secondary {
   background: transparent;
-  color: var(--color-chocolate);
-  border-color: var(--color-chocolate);
+  color: var(--color-cream);
+  border-color: var(--color-cream);
 }
 
 .btn-secondary:hover {
-  background: var(--color-chocolate);
-  color: var(--color-white);
+  background: var(--color-cream);
+  color: var(--color-chocolate);
 }
 
 .btn-whatsapp {

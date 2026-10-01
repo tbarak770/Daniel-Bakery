@@ -3,7 +3,7 @@
   width: 100%;
   height: clamp(320px, 40vw, 560px);
   overflow: hidden;
-  background: var(--color-chocolate);
+  background: var(--color-ink);
 }
 
 .media {
@@ -17,7 +17,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(59, 36, 23, 0.35) 0%, rgba(59, 36, 23, 0.15) 40%, rgba(59, 36, 23, 0.55) 100%);
+  background: linear-gradient(180deg, rgba(20, 12, 8, 0.4) 0%, rgba(20, 12, 8, 0.15) 40%, rgba(20, 12, 8, 0.6) 100%);
 }
 
 .content {
@@ -42,7 +42,7 @@
 .subtitle {
   margin-top: 14px;
   font-size: clamp(0.95rem, 0.85rem + 0.3vw, 1.15rem);
-  color: rgba(251, 246, 237, 0.92);
+  color: var(--color-cream-70);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
 }
 

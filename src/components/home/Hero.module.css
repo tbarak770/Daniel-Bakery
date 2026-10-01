@@ -21,7 +21,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(59, 36, 23, 0.72) 0%, rgba(59, 36, 23, 0.55) 45%, rgba(59, 36, 23, 0.82) 100%);
+  background: linear-gradient(180deg, rgba(20, 12, 8, 0.72) 0%, rgba(20, 12, 8, 0.55) 45%, rgba(20, 12, 8, 0.82) 100%);
 }
 
 .content {
@@ -50,7 +50,7 @@
 .subtitle {
   margin-top: 20px;
   font-size: 1.15rem;
-  color: rgba(251, 246, 237, 0.88);
+  color: var(--color-cream-70);
   line-height: 1.75;
 }
 
@@ -60,16 +60,6 @@
   justify-content: center;
   margin-top: 34px;
   flex-wrap: wrap;
-}
-
-.actions :global(.btn-secondary) {
-  border-color: var(--color-cream);
-  color: var(--color-cream);
-}
-
-.actions :global(.btn-secondary):hover {
-  background: var(--color-cream);
-  color: var(--color-chocolate);
 }
 
 @media (max-width: 640px) {

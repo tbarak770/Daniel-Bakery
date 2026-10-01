@@ -1,5 +1,5 @@
 .footer {
-  background: var(--color-chocolate);
+  background: var(--color-ink);
   color: var(--color-cream);
   margin-top: 40px;
 }
@@ -25,7 +25,7 @@
 
 .tagline {
   margin-top: 18px;
-  color: rgba(251, 246, 237, 0.75);
+  color: var(--color-cream-70);
   max-width: 320px;
   line-height: 1.7;
 }
