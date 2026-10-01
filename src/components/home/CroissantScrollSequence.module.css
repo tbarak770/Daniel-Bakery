@@ -1,7 +1,12 @@
-/* Scrollable distance = section height - 100vh, tuned to ~20-30px of scroll per frame */
+/*
+ * Timing mirrors crussant.vercel.app: 3100px of scroll drive the animation,
+ * then a 100vh tail where the stage stays pinned on the final frame while the
+ * next section slides up over it (negative margin-bottom pulls it into the tail).
+ */
 .section {
   position: relative;
-  height: 200vh;
+  height: calc(3100px + 200vh);
+  margin-bottom: -100vh;
   background: var(--color-ink);
 }
 
@@ -9,7 +14,6 @@
   position: sticky;
   top: 0;
   height: 100vh;
-  height: 100svh;
   overflow: hidden;
 }
 
@@ -20,58 +24,97 @@
   background: var(--color-ink);
 }
 
-.headline {
+.segment {
   position: absolute;
-  inset-inline: 0;
-  top: 15%;
-  padding: 0 24px;
-  text-align: center;
   color: var(--color-cream);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   will-change: opacity, transform;
 }
 
-.title {
-  font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3.1rem);
+.center {
+  top: 50%;
+  left: 50%;
+  width: 90%;
+  max-width: 800px;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.left,
+.right {
+  top: 48%;
+  width: 90%;
+  max-width: 480px;
+  transform: translateY(-50%);
+}
+
+/* text hugs the screen edge, away from the croissant (as in the reference) */
+.left {
+  left: 8%;
+  text-align: left;
+}
+
+.right {
+  right: 8%;
+  text-align: right;
+}
+
+.headline {
+  font-size: clamp(2.4rem, 5.5vw, 4.4rem);
   font-weight: 800;
-  line-height: 1.15;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.7);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--color-white);
+  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.95), 0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
-.subtitle {
-  margin-top: 12px;
-  font-size: clamp(1rem, 0.9rem + 0.35vw, 1.2rem);
-  color: rgba(251, 246, 237, 0.9);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+.subtext {
+  margin-top: 0.85rem;
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
 }
 
-@media (max-width: 1100px) {
-  .section {
-    height: 180vh;
-  }
+.center .subtext {
+  max-width: 540px;
+  margin-inline: auto;
 }
 
-@media (max-width: 640px) {
-  .section {
-    height: 180vh;
+.cta {
+  margin-top: 1.6rem;
+}
+
+/* closing segment sits a little higher than the reference's 50%: our croissant
+   is framed larger, and the button must clear its top like in the reference */
+.final {
+  top: 42%;
+}
+
+@media (max-width: 768px) {
+  .left,
+  .right {
+    left: 50%;
+    right: auto;
+    max-width: 90%;
+    text-align: center;
+    transform: translate(-50%, -50%);
   }
 
   .headline {
-    top: 13%;
+    font-size: clamp(2rem, 6vw, 3rem);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .section {
     height: auto;
+    margin-bottom: 0;
   }
 
   .stage {
     position: relative;
-  }
-
-  .headline {
-    opacity: 1;
   }
 }
