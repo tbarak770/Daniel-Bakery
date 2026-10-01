@@ -1,13 +1,15 @@
 /*
- * Timing mirrors crussant.vercel.app: 3100px of scroll drive the animation,
- * then a 100vh tail where the stage stays pinned on the final frame while the
- * next section slides up over it (negative margin-bottom pulls it into the tail).
+ * Height = 100vh (pinned stage) + (FRAME_COUNT - 1) * pixels-per-frame of scroll,
+ * plus a 100vh tail that holds frame-067 while the next section slides up over
+ * it (negative margin-bottom pulls the next section into that tail).
  */
 .section {
+  --frame-steps: 66;
+  --px-per-frame: 68px;
   position: relative;
-  height: calc(3100px + 200vh);
+  height: calc(200vh + var(--frame-steps) * var(--px-per-frame));
   margin-bottom: -100vh;
-  background: var(--color-ink);
+  background: #1a100b;
 }
 
 .stage {
@@ -21,7 +23,43 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--color-ink);
+  background: #1a100b;
+  will-change: transform;
+}
+
+/* faint warm heat glow around the oven/croissant (opacity driven per frame, max 0.12) */
+.glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(ellipse 55% 45% at 45% 45%, rgba(255, 138, 30, 0.9) 0%, rgba(255, 110, 20, 0.35) 45%, rgba(255, 110, 20, 0) 75%);
+  filter: blur(8px);
+}
+
+/* gentle edge darkening, transparent centre */
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.12) 75%, rgba(0, 0, 0, 0.22) 100%);
+}
+
+.debug {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 5;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #9cff9c;
+  font: 12px/1.5 ui-monospace, Consolas, monospace;
+  direction: ltr;
+  white-space: pre;
+  pointer-events: none;
 }
 
 .segment {
@@ -88,10 +126,16 @@
   margin-top: 1.6rem;
 }
 
-/* closing segment sits a little higher than the reference's 50%: our croissant
-   is framed larger, and the button must clear its top like in the reference */
+/* closing segment sits above the reference's 50%: in our wide hero frames the
+   croissant is at ~58% height, and the button must clear its top */
 .final {
-  top: 42%;
+  top: 34%;
+}
+
+@media (max-width: 767px) {
+  .section {
+    --px-per-frame: 50px;
+  }
 }
 
 @media (max-width: 768px) {

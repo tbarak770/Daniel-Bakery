@@ -6,81 +6,80 @@ import { clamp01 } from '../../utils/scrollCrossfade'
 import LoadingScreen from './LoadingScreen'
 import styles from './CroissantScrollSequence.module.css'
 
-// Loading screen: shown on the first visit only (frames are browser-cached
-// afterwards), never longer than this, so a slow connection is never stuck.
+/*
+ * Scroll-scrubbed croissant shot: 67 frames, one frame on screen at a time,
+ * scroll position = frame (no crossfade, no smoothing, no scroll hijacking).
+ * The frames themselves carry the camera move (push-in while proofing/baking,
+ * pull-out to the wide hero shot); the code only stabilises, adds a micro
+ * heat-shake at the baking peak and a faint warm glow. See CLAUDE.md.
+ */
+const FRAME_COUNT = 67
+const FRAME_ASPECT = 16 / 9
+
+// Loading screen: first visit only, never longer than this.
 const LOADING_MAX_MS = 6000
 let framesLoadedOnce = false
 
-// Frames are generated from source-frames/croissant/*.png (see CLAUDE.md).
-// FRAME_COUNT must match the number of exported web frames.
-const FRAME_COUNT = 33
-const FRAME_ASPECT = 16 / 9
-
-// Where the croissant sits inside every (aligned) frame, as fractions of the image.
-const FOCAL = { x0: 0.31, x1: 0.78, y0: 0.42, y1: 0.9 }
-const FOCAL_CX = (FOCAL.x0 + FOCAL.x1) / 2
-const FOCAL_CY = (FOCAL.y0 + FOCAL.y1) / 2
-
-// Direction (timed like crussant.vercel.app, measured side by side with its 80 frames).
-// Baking: which frame (1-based) is reached at each scroll progress. Like the
-// reference, the pastry stays pale until ~0.2, is pale-golden at 0.5, light
-// golden-brown at 0.75 and fully baked at ~0.9; the rest is the hero shot.
-const BAKE_KEYS: [number, number][] = [
-  [0, 1],
-  [0.2, 5],
-  [0.5, 14],
-  [0.75, 25],
-  [0.9, FRAME_COUNT],
-  [1, FRAME_COUNT],
+// Stabilisation, measured offline from the frames themselves (adjacent-frame
+// motion -> smoothed camera path). Per frame: [scale, shiftX, shiftY], shifts
+// in frame-width units. Clamped to the brief: scale 1/1.025..1.025, |shift| <= 6px.
+const CAMERA_CORRECTION: [number, number, number][] = [
+  [1.0067, 0.00093, -0.00116], [1.006, 0.00166, -0.00193], [0.9758, -0.00053, 0.00324], [1.0075, 0.00234, -0.00211],
+  [0.9923, -0.00417, 0.00148], [1.025, 0.00326, -0.00417], [1.012, 0.00202, -0.00417], [1.0102, -0.00142, 0.00417],
+  [0.9818, 0.00034, 0.00283], [0.9839, 0.00009, 0.0038], [0.9932, -0.00015, -0.00067], [0.9978, -0.00042, -0.00051],
+  [1.0017, 0.00038, -0.00008], [1.0017, 0.00016, 0.00055], [0.9958, 0.00002, 0.00239], [1.0044, 0.00105, -0.00083],
+  [1.0062, 0.00012, 0.00019], [1.0065, 0.00032, -0.001], [1.0048, -0.00053, -0.00239], [1.0021, -0.00046, -0.00076],
+  [0.9756, -0.00164, 0.00417], [1.0128, 0.00016, -0.00066], [1.008, -0.00039, -0.00177], [0.9899, -0.00001, 0.00138],
+  [0.9971, 0.00033, 0.00139], [1.0137, -0.00034, -0.00301], [1.0212, 0.00016, -0.00348], [0.9904, 0.00186, 0.002],
+  [0.9925, 0.00072, 0.00127], [0.9929, -0.00022, 0.00065], [0.9991, 0.00003, 0.00023], [1.0006, 0.00035, -0.00007],
+  [1.0042, -0.00038, -0.00035], [1.0042, -0.0001, -0.00062], [1.0067, -0.00092, -0.00085], [0.9854, 0.00131, 0.00417],
+  [0.9976, -0.00065, -0.00093], [0.9976, -0.00063, -0.00077], [0.9973, -0.00073, -0.00064], [0.998, 0.0001, -0.00064],
+  [1.0009, -0.00012, 0.00024], [1, 0.00083, -0.00008], [0.9969, 0.00106, -0.0006], [0.9909, 0.00182, -0.00139],
+  [0.9848, 0.00319, -0.00142], [0.9949, 0.00299, -0.00058], [1.0161, -0.00417, 0.0024], [1.0098, -0.00251, 0.0013],
+  [1.0042, -0.00101, 0.00051], [0.9999, 0.00004, -0.00005], [0.9953, -0.00028, -0.00046], [0.9892, 0.00028, 0.0002],
+  [0.984, -0.0003, 0.00079], [0.9802, -0.00101, 0.00009], [1.025, 0.00192, -0.00417], [0.9822, -0.00384, -0.00104],
+  [0.9951, 0.00103, 0.00224], [0.9991, 0.00053, 0.00132], [0.9979, -0.00009, 0.00058], [0.9957, -0.00083, 0.00006],
+  [0.9956, -0.00164, -0.00027], [1.0043, 0.0017, 0.0006], [1.003, 0.00091, 0.00055], [1.0034, 0.00027, 0.00065],
+  [0.9996, -0.0002, -0.00016], [1.0028, 0.00051, 0.00023], [1.0027, 0.00028, 0.00077],
 ]
+// Every frame is drawn this much larger so a correction (or the shake) can never
+// reveal the photo's edge. Equals 1 / the smallest correction scale.
+const OVERSCAN = 1.025
 
-// Camera keyframes [progress, zoom, croissant screen-x, croissant screen-y].
-// Zoom 1 = frame covers the viewport; < 1 = wider than the photo, edges fade to dark.
-// Reference (croissant width on screen): 26% -> 33% -> 38% -> 40% (peak ~0.6)
-// -> 29% -> 21%, centred at x 0.51-0.52, y 0.66-0.75 (tilts up at the end).
-// Our photos are framed ~2x closer, so the same push-in / pull-back shape is
-// compressed into the range the photos allow (croissant ~43% -> 57% -> 38%).
-const CAMERA_KEYS: [number, number, number, number][] = [
-  [0, 0.82, 0.5, 0.68],
-  [0.2, 0.93, 0.5, 0.67],
-  [0.4, 1.03, 0.5, 0.66],
-  [0.6, 1.06, 0.5, 0.68],
-  [0.8, 0.9, 0.5, 0.73],
-  [1, 0.72, 0.5, 0.72],
-]
+// Portrait screens: cover would crop the croissant in the close frames (25-40),
+// so the frame is scaled to fit this croissant span (fraction of frame width).
+const CROISSANT_SPAN = 0.56
 
-// Displayed progress eases toward the scroll position with this time constant,
-// so wheel steps don't jerk the camera; it settles within ~0.3s of stopping.
-const SMOOTH_MS = 70
-
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t
+function easeInOut(t: number) {
+  return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2
 }
 
-function bakeFrameAt(p: number): number {
-  for (let i = 1; i < BAKE_KEYS.length; i++) {
-    const [p0, f0] = BAKE_KEYS[i - 1]
-    const [p1, f1] = BAKE_KEYS[i]
-    if (p <= p1) return lerp(f0, f1, (p - p0) / (p1 - p0)) - 1
+function rangeProgress(value: number, from: number, to: number) {
+  return clamp01((value - from) / (to - from))
+}
+
+// Heat shake at the baking peak, frames 19-29 (indices 18-28): deterministic,
+// <= 1px / 0.7px / 0.03deg, eased in and out, exactly zero outside the range.
+function shakeFor(index: number) {
+  if (index < 18 || index > 28) return { x: 0, y: 0, rot: 0 }
+  const env = easeInOut(Math.sin(Math.PI * rangeProgress(index, 18, 28)))
+  return {
+    x: Math.sin(index * 1.7) * env * 1.0,
+    y: Math.sin(index * 2.1) * env * 0.7,
+    rot: ((Math.sin(index * 1.3) * env * 0.03) * Math.PI) / 180,
   }
-  return FRAME_COUNT - 1
 }
 
-// Catmull-Rom through the camera keys: smooth, no stops at keyframes.
-function cameraAt(p: number): { zoom: number; sx: number; sy: number } {
-  const k = CAMERA_KEYS
-  let i = 1
-  while (i < k.length - 1 && p > k[i][0]) i++
-  const p0 = k[Math.max(0, i - 2)], p1 = k[i - 1], p2 = k[i], p3 = k[Math.min(k.length - 1, i + 1)]
-  const t = clamp01((p - p1[0]) / (p2[0] - p1[0]))
-  const cr = (j: number) => {
-    const a = p0[j], b = p1[j], c = p2[j], d = p3[j]
-    return 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t)
-  }
-  return { zoom: cr(1), sx: cr(2), sy: cr(3) }
+// Warm glow: rises from frame 9, peaks at frames 20-25, gone by frame 35.
+function glowFor(index: number) {
+  const f = index + 1
+  if (f <= 9 || f >= 35) return 0
+  if (f < 20) return 0.12 * easeInOut(rangeProgress(f, 9, 20))
+  if (f <= 25) return 0.12
+  return 0.12 * (1 - easeInOut(rangeProgress(f, 25, 35)))
 }
 
-// Reference text curves: trapezoid fade + linear ramp.
+// Text beats (timed like the reference): trapezoid fade + linear ramp.
 function trap(p: number, a: number, b: number, c: number, d: number) {
   if (p <= a || p >= d) return 0
   if (p < b) return (p - a) / (b - a)
@@ -92,36 +91,44 @@ function ramp(p: number, a: number, b: number) {
 }
 
 function frameUrls(): string[] {
-  const dir = window.innerWidth <= 900 ? 'images/croissant/m' : 'images/croissant'
-  return Array.from({ length: FRAME_COUNT }, (_, i) =>
-    asset(`${dir}/frame-${String(i + 1).padStart(2, '0')}.webp`),
-  )
+  const dir = window.innerWidth <= 900 ? 'frames/m' : 'frames'
+  return Array.from({ length: FRAME_COUNT }, (_, i) => asset(`${dir}/frame-${String(i + 1).padStart(3, '0')}.webp`))
 }
 
-// Width of the frame at zoom 1. Landscape: cover. Portrait: the reference simply
-// covers (and crops the pastry); we scale so the croissant spans about the full
-// screen width at the peak of the push-in, keeping it whole.
-function baseWidth(vw: number, vh: number): number {
+interface Box {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+// One base box for every frame (viewport-only), like object-fit: cover with
+// object-position 50% 52% (desktop) / 54% (mobile). Portrait: fit the croissant.
+function baseBox(vw: number, vh: number): Box {
+  const posY = vw < 768 ? 0.54 : 0.52
   const coverW = Math.max(vw, vh * FRAME_ASPECT)
-  if (vw >= vh) return coverW
-  const containW = Math.min(vw, vh * FRAME_ASPECT)
-  const focalFitW = (vw * 1.12) / (FOCAL.x1 - FOCAL.x0)
-  return Math.max(containW, Math.min(coverW, focalFitW))
+  let w = coverW
+  if (vh > vw) {
+    const containW = Math.min(vw, vh * FRAME_ASPECT)
+    w = Math.max(containW, Math.min(coverW, (vw * 1.04) / CROISSANT_SPAN))
+  }
+  const h = w / FRAME_ASPECT
+  return { x: (vw - w) * 0.5, y: (vh - h) * posY, w, h }
 }
 
-function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+function isDebug() {
+  const q = window.location.search + '&' + (window.location.hash.split('?')[1] ?? '')
+  return /(^|[?&])debug=1(&|$)/.test(q)
 }
 
 export default function CroissantScrollSequence() {
   const sectionRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const glowRef = useRef<HTMLDivElement>(null)
+  const debugRef = useRef<HTMLPreElement>(null)
   const segRefs = useRef<(HTMLDivElement | null)[]>([])
-  const framesRef = useRef<FrameSet | null>(null)
-  const shownRef = useRef(-1)
-  const targetRef = useRef(0)
-  const lastDrawnRef = useRef('')
   const rafRef = useRef<number | null>(null)
+  const [debug] = useState(isDebug)
   const [loadPct, setLoadPct] = useState(0)
   const [loading, setLoading] = useState(
     () => !framesLoadedOnce && !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -139,69 +146,56 @@ export default function CroissantScrollSequence() {
     if (!section || !canvas) return
     const ctx = canvas.getContext('2d', { alpha: false })
     if (!ctx) return
-    const reduced = prefersReducedMotion()
-    const ink = getComputedStyle(document.documentElement).getPropertyValue('--color-ink').trim() || '#140c08'
-    const inkClear = 'rgba(20, 12, 8, 0)'
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const ink = '#1a100b'
+    const inkClear = 'rgba(26, 16, 11, 0)'
     let vw = 0
     let vh = 0
-    let lastTime = 0
+    let box: Box = { x: 0, y: 0, w: 0, h: 0 }
+    let frames: FrameSet | null = null
+    let drawnIndex = -1
+    let lastScrollY = window.scrollY
+    let lastTime = performance.now()
+    let speed = 0
+    let loaded = 0
 
-    function draw(p: number) {
-      const frames = framesRef.current
+    function draw(index: number) {
       if (!frames || !ctx) return
-      // clean switch to the nearest frame, like the reference: blending adjacent
-      // AI frames ghosts wherever the pastry's outline changes between them
-      const index = nearestReadyFrame(frames, Math.round(bakeFrameAt(p)))
-      if (index === -1) return
-      const cam = cameraAt(p)
+      const ready = nearestReadyFrame(frames, index)
+      if (ready === -1) return
+      drawnIndex = index
 
-      // quarter-pixel grid: the same scroll position always paints the exact same
-      // image (forward or reverse), and sub-pixel jitter never triggers a redraw
-      const q = (n: number) => Math.round(n * 4) / 4
-      const w = q(baseWidth(vw, vh) * cam.zoom)
-      const h = q(w / FRAME_ASPECT)
-      const portrait = vh > vw
-      let x = cam.sx * vw - FOCAL_CX * w
-      let y = (portrait ? 0.6 : cam.sy) * vh - FOCAL_CY * h
-      // when the photo covers the screen, never reveal its edges; when it is
-      // narrower (wide shots) keep the croissant on its mark, edges fade out below
-      if (w >= vw) x = Math.min(0, Math.max(vw - w, x))
-      if (h >= vh) y = Math.min(0, Math.max(vh - h, y))
-      x = q(x)
-      y = q(y)
-
-      const key = `${vw}x${vh}|${index}|${x}|${y}|${w}`
-      if (key === lastDrawnRef.current) return
-      lastDrawnRef.current = key
+      const [a, bx, by] = CAMERA_CORRECTION[ready]
+      const shake = reduced ? { x: 0, y: 0, rot: 0 } : shakeFor(ready)
+      const s = OVERSCAN * a
+      const w = box.w * s
+      const h = box.h * s
+      const cx = box.x + box.w / 2 + bx * box.w + shake.x
+      const cy = box.y + box.h / 2 + by * box.w + shake.y
 
       ctx.fillStyle = ink
       ctx.fillRect(0, 0, vw, vh)
-      ctx.drawImage(frames.images[index], x, y, w, h)
+      ctx.save()
+      ctx.translate(cx, cy)
+      if (shake.rot) ctx.rotate(shake.rot)
+      ctx.drawImage(frames.images[ready], -w / 2, -h / 2, w, h)
+      ctx.restore()
 
-      // photo edges inside the screen dissolve into the dark (the "wide" shots)
-      const fade = Math.min(w, h) * 0.14
-      const edges: [number, number, number, number, boolean][] = [
-        [x, 0, x + fade, 0, x > 0.5],
-        [x + w, 0, x + w - fade, 0, x + w < vw - 0.5],
-        [0, y, 0, y + fade, y > 0.5],
-        [0, y + h, 0, y + h - fade, y + h < vh - 0.5],
-      ]
-      for (const [x0, y0, x1, y1, visible] of edges) {
-        if (!visible) continue
-        const g = ctx.createLinearGradient(x0, y0, x1, y1)
-        g.addColorStop(0, ink)
-        g.addColorStop(1, inkClear)
-        ctx.fillStyle = g
-        ctx.fillRect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0) || vw, Math.abs(y1 - y0) || vh)
+      // portrait band: the photo's top/bottom edges dissolve into the ground
+      if (box.h < vh - 1) {
+        const top = cy - h / 2
+        const bottom = cy + h / 2
+        const fade = h * 0.16
+        for (const [from, to] of [[top, top + fade], [bottom, bottom - fade]] as const) {
+          const g = ctx.createLinearGradient(0, from, 0, to)
+          g.addColorStop(0, ink)
+          g.addColorStop(1, inkClear)
+          ctx.fillStyle = g
+          ctx.fillRect(0, Math.min(from, to) - 1, vw, fade + 2)
+        }
       }
 
-      // reference vignette
-      const r = Math.max(vw, vh * 0.8)
-      const v = ctx.createRadialGradient(vw / 2, vh / 2, r * 0.35, vw / 2, vh / 2, r * 0.8)
-      v.addColorStop(0, 'rgba(0, 0, 0, 0.15)')
-      v.addColorStop(1, 'rgba(0, 0, 0, 0.65)')
-      ctx.fillStyle = v
-      ctx.fillRect(0, 0, vw, vh)
+      if (glowRef.current) glowRef.current.style.opacity = reduced ? '0' : glowFor(ready).toFixed(3)
     }
 
     function applyText(p: number) {
@@ -212,46 +206,47 @@ export default function CroissantScrollSequence() {
         el.style.transform = transform
         el.style.visibility = opacity > 0.001 ? 'visible' : 'hidden'
       }
-      // 1. opening, centre
       const o1 = trap(p, 0, 0.04, 0.14, 0.2), e1 = ramp(p, 0, 0.2)
       set(s[0], o1, `translate(-50%, -50%) translateY(${(1 - o1) * 20 - e1 * 15}px) scale(${1.02 - e1 * 0.04})`)
-      // side segments are centred on narrow screens (see CSS)
       const sideBase = vw <= 768 ? 'translate(-50%, -50%)' : 'translateY(-50%)'
-      // 2. left
       const o2 = trap(p, 0.23, 0.3, 0.42, 0.49), e2 = ramp(p, 0.23, 0.49)
       set(s[1], o2, `${sideBase} translateY(${15 - e2 * 30}px) translateX(${(1 - o2) * -30}px)`)
-      // 3. right
       const o3 = trap(p, 0.51, 0.58, 0.68, 0.75), e3 = ramp(p, 0.51, 0.75)
       set(s[2], o3, `${sideBase} translateY(${15 - e3 * 30}px) translateX(${(1 - o3) * 30}px)`)
-      // 4. closing, centre + CTA (fades out just before the next section slides in)
       const o4 = p < 0.77 ? 0 : p < 0.98 ? Math.min(1, (p - 0.77) / 0.12) : Math.max(0, 1 - (p - 0.98) / 0.02)
       const e4 = ramp(p, 0.77, 0.98)
       set(s[3], o4, `translate(-50%, -50%) translateY(${(1 - o4) * 30}px) scale(${1.04 - e4 * 0.04})`)
       if (s[3]) s[3].style.pointerEvents = o4 > 0.4 ? 'auto' : 'none'
     }
 
+    // progress over (FRAME_COUNT - 1) * pixelsPerFrame of scroll; the section's
+    // last 100vh is a tail that holds frame-067 while the next section slides over
     function readProgress() {
-      const rect = section!.getBoundingClientRect()
-      // last 100vh of the section is the tail where the next section slides over
-      const scrollable = rect.height - 2 * window.innerHeight
-      return scrollable > 0 ? clamp01(-rect.top / scrollable) : 1
+      const sectionTop = section!.getBoundingClientRect().top + window.scrollY
+      const scrollable = section!.offsetHeight - 2 * window.innerHeight
+      if (scrollable <= 0) return 1
+      return Math.min(1, Math.max(0, (window.scrollY - sectionTop) / scrollable))
     }
 
     function tick(now: number) {
       rafRef.current = null
-      const target = reduced ? 1 : readProgress()
-      targetRef.current = target
-      const dt = lastTime ? Math.min(64, now - lastTime) : 16
-      lastTime = now
-      let shown = shownRef.current < 0 ? target : shownRef.current
-      shown += (target - shown) * (1 - Math.exp(-dt / SMOOTH_MS))
-      if (Math.abs(target - shown) < 0.0004) shown = target
-      shownRef.current = shown
-      draw(shown)
-      // reduced motion: static hero frame with the closing text visible
-      applyText(reduced ? 0.9 : shown)
-      if (shown !== target) rafRef.current = requestAnimationFrame(tick)
-      else lastTime = 0
+      const progress = reduced ? 1 : readProgress()
+      const frameIndex = Math.min(FRAME_COUNT - 1, Math.max(0, Math.round(progress * (FRAME_COUNT - 1))))
+      if (frameIndex !== drawnIndex) draw(frameIndex)
+      applyText(reduced ? 0.9 : progress)
+
+      if (debugRef.current) {
+        const dt = Math.max(1, now - lastTime)
+        speed = speed * 0.7 + ((window.scrollY - lastScrollY) / dt) * 1000 * 0.3
+        lastScrollY = window.scrollY
+        lastTime = now
+        debugRef.current.textContent =
+          `frame    ${String(frameIndex + 1).padStart(3, '0')} / ${FRAME_COUNT}\n` +
+          `progress ${progress.toFixed(4)}\n` +
+          `speed    ${Math.round(speed)} px/s\n` +
+          `loaded   ${loaded} / ${FRAME_COUNT}\n` +
+          `canvas   ${canvas!.width} x ${canvas!.height}`
+      }
     }
 
     function requestTick() {
@@ -265,16 +260,19 @@ export default function CroissantScrollSequence() {
       canvas!.width = Math.round(vw * dpr)
       canvas!.height = Math.round(vh * dpr)
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx!.imageSmoothingEnabled = true
       ctx!.imageSmoothingQuality = 'high'
-      lastDrawnRef.current = ''
-      if (shownRef.current >= 0) draw(shownRef.current)
+      box = baseBox(vw, vh)
+      if (drawnIndex >= 0) draw(drawnIndex)
     }
 
-    const { frames, cancel } = preloadFrames(
+    const preload = preloadFrames(
       frameUrls(),
-      () => {
-        lastDrawnRef.current = ''
-        if (shownRef.current >= 0) draw(shownRef.current)
+      (i) => {
+        loaded++
+        // first frame, or the frame the scroll is waiting for, just arrived
+        if (drawnIndex === -1 || i === drawnIndex) draw(drawnIndex === -1 ? 0 : drawnIndex)
+        requestTick()
       },
       (settled, total) => {
         setLoadPct(Math.round((settled / total) * 100))
@@ -284,7 +282,7 @@ export default function CroissantScrollSequence() {
         }
       },
     )
-    framesRef.current = frames
+    frames = preload.frames
 
     const ro = new ResizeObserver(() => {
       resize()
@@ -297,15 +295,13 @@ export default function CroissantScrollSequence() {
     window.addEventListener('scroll', requestTick, { passive: true })
     window.addEventListener('orientationchange', requestTick)
     return () => {
-      cancel()
+      preload.cancel()
       ro.disconnect()
       window.removeEventListener('scroll', requestTick)
       window.removeEventListener('orientationchange', requestTick)
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
       // reset so a remount (StrictMode) can schedule its own first tick
       rafRef.current = null
-      shownRef.current = -1
-      lastDrawnRef.current = ''
     }
   }, [])
 
@@ -318,6 +314,8 @@ export default function CroissantScrollSequence() {
       <LoadingScreen progress={loadPct} hidden={!loading} />
       <div className={styles.stage}>
         <canvas className={styles.canvas} ref={canvasRef} aria-hidden="true" />
+        <div className={styles.glow} ref={glowRef} aria-hidden="true" />
+        <div className={styles.vignette} aria-hidden="true" />
         <div className={`${styles.segment} ${styles.center}`} ref={seg(0)}>
           <h2 className={styles.headline}>האפייה המושלמת</h2>
           <p className={styles.subtext}>מאפים בעבודת יד, נאפים טריים במיוחד בשבילכם.</p>
@@ -345,6 +343,7 @@ export default function CroissantScrollSequence() {
             לכל המוצרים
           </Link>
         </div>
+        {debug && <pre className={styles.debug} ref={debugRef} />}
       </div>
     </section>
   )

@@ -53,7 +53,8 @@ export function preloadFrames(
       },
       () => {
         // A missing frame must not break the sequence: the renderer falls back
-        // to the nearest ready frame.
+        // to the nearest ready frame (the previous one first).
+        console.error(`[framePreloader] frame ${i + 1}/${urls.length} failed to load: ${urls[i]}`)
         settle()
       },
     )
@@ -75,7 +76,7 @@ export function preloadFrames(
   }
 }
 
-/** Nearest ready frame to `target` (searching both directions), or -1 if none. */
+/** Nearest ready frame to `target`, preferring the previous one at equal distance; -1 if none. */
 export function nearestReadyFrame(frames: FrameSet, target: number): number {
   const n = frames.ready.length
   for (let d = 0; d < n; d++) {
