@@ -73,7 +73,9 @@ WhatsApp מוכנה מראש לדניאל, שמתאם תשלום ידנית לא
 ```
 src/
   config/siteConfig.ts      מספר וואטסאפ, שם מותג, קישורי סושיאל
-  data/products.ts          8 המוצרים הקבועים (id, name, price, category, image, description, bestSeller)
+  data/products.ts          10 המוצרים הקבועים (id, name, price, category, image, description, bestSeller).
+                            02/10/2026: נוספו קרואסון שוקולד (16₪, קינוחים, מומלץ) וקראנץ שוקולד (65₪, עוגות);
+                            תמונת מוס שוקולד הוחלפה. מקור התמונות: Desktop/תמונות דניאל (PNG 1254²) -> 900² JPG
   types/index.ts             Product, CartItem, Category
   context/CartContext.tsx    state עגלה + localStorage persistence (מפתח "daniel-bakery-cart")
   utils/asset.ts             asset(path) — עוטף import.meta.env.BASE_URL לנתיבי public/

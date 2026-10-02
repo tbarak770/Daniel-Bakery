@@ -27,6 +27,14 @@ export const products: Product[] = [
     description: 'עוגת גבינה אפויה, קלאסית ונימוחה, על בסיס פריך.',
   },
   {
+    id: 'chocolate-krantz',
+    name: 'קראנץ שוקולד',
+    price: 65,
+    category: 'עוגות',
+    image: 'images/products/chocolate-krantz.jpg',
+    description: 'עוגת שמרים קלועה עם שכבות שוקולד עשירות, מבריקה ופריכה מלמעלה ורכה מבפנים.',
+  },
+  {
     id: 'choc-chip-cookies',
     name: 'עוגיות שוקולד צ\'יפס',
     price: 35,
@@ -50,6 +58,15 @@ export const products: Product[] = [
     category: 'קינוחים',
     image: 'images/products/brownies.jpg',
     description: 'בראוניז עשיר ואגוזי, עם לב שוקולד נימוח.',
+    bestSeller: true,
+  },
+  {
+    id: 'chocolate-croissant',
+    name: 'קרואסון שוקולד',
+    price: 16,
+    category: 'קינוחים',
+    image: 'images/products/chocolate-croissant.jpg',
+    description: 'קרואסון חמאה זהוב ופריך בשכבות, עם לב שוקולד נמס.',
     bestSeller: true,
   },
   {
