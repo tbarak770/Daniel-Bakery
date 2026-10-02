@@ -4,9 +4,9 @@
  * it (negative margin-bottom pulls the next section into that tail).
  */
 .section {
-  /* 119 steps x 38px = same total scroll as before (~4500px desktop, ~3300px phone) */
+  /* 119 steps x 26px = ~3100px of scroll, the same as the reference */
   --frame-steps: 119;
-  --px-per-frame: 38px;
+  --px-per-frame: 26px;
   position: relative;
   height: calc(200vh + var(--frame-steps) * var(--px-per-frame));
   margin-bottom: -100vh;
@@ -131,12 +131,6 @@
    croissant is at ~58% height, and the button must clear its top */
 .final {
   top: 34%;
-}
-
-@media (max-width: 767px) {
-  .section {
-    --px-per-frame: 28px;
-  }
 }
 
 @media (max-width: 768px) {
