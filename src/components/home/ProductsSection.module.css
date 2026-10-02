@@ -30,8 +30,27 @@
   gap: 2rem;
 }
 
-@media (max-width: 560px) {
+/* phones: swipeable row with the next card peeking in, instead of a tall stack */
+@media (max-width: 640px) {
   .grid {
-    gap: 1.5rem;
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 18px;
+    overscroll-behavior-x: contain;
+    margin-inline: -18px;
+    padding-inline: 18px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .grid > * {
+    flex: 0 0 72%;
+    scroll-snap-align: start;
   }
 }

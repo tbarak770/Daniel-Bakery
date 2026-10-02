@@ -119,6 +119,18 @@
   padding-bottom: 96px;
 }
 
+/* phones: the two names stack instead of wrapping around the separator */
+@media (max-width: 640px) {
+  .titleSep {
+    display: none;
+  }
+
+  .titleEn {
+    display: block;
+    direction: ltr;
+  }
+}
+
 @media (max-width: 860px) {
   .content {
     grid-template-columns: 1fr;

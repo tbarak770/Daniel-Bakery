@@ -1,0 +1,10 @@
+.section {
+  position: relative;
+  z-index: 20;
+  padding: 104px 0 112px;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 45%, rgba(255, 138, 30, 0.16) 0%, rgba(255, 138, 30, 0) 70%),
+    var(--color-ground-4);
+  border-top: 1px solid var(--hairline);
+  overflow: hidden;
+}

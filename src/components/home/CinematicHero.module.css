@@ -189,6 +189,81 @@
   pointer-events: auto;
 }
 
+/* ---- opening variant: first section on phones ---- */
+.opening {
+  height: 320vh;
+  border-top: none;
+}
+
+/* leave room for the fixed floating header */
+.opening .content {
+  padding-top: 96px;
+  padding-bottom: 28px;
+}
+
+/* phone: captions sit low over a dark fade, the photo stays clean above */
+.opening .footer {
+  margin-top: 20px;
+}
+
+.opening .overlay {
+  background: linear-gradient(180deg, rgba(9, 7, 5, 0.55) 0%, rgba(9, 7, 5, 0) 22%, rgba(9, 7, 5, 0) 45%, rgba(9, 7, 5, 0.72) 66%, rgba(9, 7, 5, 0.92) 100%);
+}
+
+.welcome {
+  width: 90%;
+  max-width: 520px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.welcomeTitle {
+  margin: 0 0 1rem;
+  font-size: clamp(2.6rem, 11vw, 4.4rem);
+  line-height: 0.98;
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.95);
+}
+
+.accent {
+  color: var(--color-accent);
+  text-shadow: 0 0 40px rgba(255, 138, 30, 0.5);
+}
+
+.welcomeText {
+  margin-bottom: 1.8rem;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
+}
+
+.welcomeHint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 640px) {
+  .captionTitle {
+    font-size: clamp(2.1rem, 9.5vw, 2.8rem);
+  }
+
+  .captionStack {
+    min-height: 130px;
+  }
+
+  .content {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wrapper {
     height: auto;

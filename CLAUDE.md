@@ -85,9 +85,12 @@ src/
   utils/framePreloader.ts    טעינה מוקדמת + decode של רצף פריימים לקנבס + מונה התקדמות (CroissantScrollSequence)
   components/icons.tsx       כל אייקוני ה-SVG המשותפים (כולל Instagram/Facebook)
   components/layout/         Header, MobileMenu, Footer, FloatingWhatsAppButton
-  components/home/           סדר בדף הבית: CroissantScrollSequence (+LoadingScreen) → CategoryShowcase →
-                             ProductsSection ×2 → AboutPreview (מסגרת עגולה) → QuoteSection → Gallery →
-                             CinematicHero (דסקטופ) / CookieStoryMobile (טלפון), שניהם מסתיימים ב-LastBite
+  components/home/           סדר בדף הבית (מחשב, ≥900px): CroissantScrollSequence (+LoadingScreen) →
+                             CategoryShowcase → ProductsSection ×2 → AboutPreview (מסגרת עגולה) →
+                             QuoteSection → Gallery → CinematicHero (סיפור העוגייה, מסתיים ב-LastBite).
+                             טלפון (<900px): CinematicHero variant="opening" (סיפור העוגייה כפתיחה,
+                             מסתיים ב"נאפה באהבה, בכל ביס." + כפתור) → אותם סקשנים → MobileFinale
+                             (LastBite על זוהר כתום, בלי תמונות). הקרואסון לא נטען בטלפון בכלל.
   components/product/        ProductCard, ProductGrid
   components/cart/           CartDrawer (שני שלבים: cart → form), CartLineItem, OrderForm
   components/ScrollToTop.tsx  מאפס גלילה ל-(0,0) בכל שינוי route
@@ -134,11 +137,24 @@ src/
   לעקוף/לאפס חוקי `:nth-child(N)` ספציפיים ל-breakpoint אחר, להשתמש ב-
   `.item:nth-child(n)` (מתאים לכל הילדים, specificity שווה) ולא ב-`.item`
   לבד. ראה `Gallery.module.css`.
-- **`CinematicHero.tsx` (דסקטופ בלבד, `min-width: 900px`; מ-02/10/2026
-  הוא הסקשן ה**אחרון** בדף הבית, לא הפתיחה, ומסתיים ב-`LastBite` - "ביס
-  אחד / ואתם מכורים." בסגנון "THE LAST BITE" של הרפרנס. בטלפון:
-  `CookieStoryMobile` - אותן 6 תמונות כמצגת crossfade + `LastBite`. הטקסט
-  ההיסטורי שלהלן על "מחליף את Hero+VideoStrip" כבר לא רלוונטי):** חוויית
+- **גרסת המובייל (02/10/2026, בקשת משתמש "שיהיה סיפור"):** בטלפון אין
+  קרואסון. הפתיחה היא סיפור העוגייה בגלילה (`CinematicHero variant="opening"`,
+  גובה 320vh, ריווח עליון להדר הצף, הכיתוב **בתחתית** מעל שכבת הכהיה כי
+  כיתוב במרכז לא היה קריא על הקמח הלבן בפרק 1). בסוף הסקשן יש ברכה עם
+  כפתור "לכל המוצרים". הסיום בתחתית הדף הוא `MobileFinale`. `CookieStoryMobile`
+  (מצגת crossfade) **נמחק**. בנוסף בטלפון:
+  - "מומלצים"/"נבחרים" הם **שורת החלקה אופקית** (scroll-snap, כרטיס 72%, הבא
+    מציץ מהצד). קודם היו 8 כרטיסים במסך מלא אחד מתחת לשני.
+  - בעמוד המוצרים **2 כרטיסים בשורה**: `ProductCard` דחוס מתחת ל-560px, התיאור
+    חתוך לשתי שורות. הגובה ירד מ-15,172px ל-6,866px.
+  - טאבי הקטגוריות בשורה אחת.
+  - כותרת עמוד האודות נשברת לשתי שורות בלי ה-`|`.
+  נבדק ב-360 וב-390px: בלי גלילה הצידה, בלי שגיאות, 0 בקשות לפריימי קרואסון,
+  והמחשב ללא שינוי.
+- **`CinematicHero.tsx` (במחשב: הסקשן ה**אחרון** בדף הבית, מסתיים ב-`LastBite`
+  - "ביס אחד / ואתם מכורים." בסגנון "THE LAST BITE" של הרפרנס. בטלפון: הפתיחה,
+  ראו למעלה. הטקסט ההיסטורי שלהלן על "דסקטופ בלבד" ו"מחליף את Hero+VideoStrip"
+  כבר לא רלוונטי):** חוויית
   scroll-scrubbing מבוססת **6 תמונות סטילס** (לא וידאו!) שהמשתמש סיפק
   בעצמו - סדרה עקבית ויזואלית (AI-generated, רקע שחור, משטח שיש כהה, תאורה
   חמה זהה) שמספרת סיפור אחד אמיתי ומחובר: קמח+ביצה → קקאו+שוקולד → בתנור →

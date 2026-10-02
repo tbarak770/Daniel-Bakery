@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { asset } from '../../utils/asset'
 import { clamp01, computeBoundaries, crossfadeOpacity, kenBurnsScale } from '../../utils/scrollCrossfade'
 import { ChevronIcon } from '../icons'
@@ -89,7 +90,17 @@ function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-export default function CinematicHero() {
+interface Props {
+  /**
+   * closing (default): last section of the desktop home page, ends on LastBite.
+   * opening: first section on phones (replaces the croissant there), ends on a
+   * short welcome + call to action that leads into the menu.
+   */
+  variant?: 'opening' | 'closing'
+}
+
+export default function CinematicHero({ variant = 'closing' }: Props) {
+  const opening = variant === 'opening'
   const wrapperRef = useRef<HTMLDivElement>(null)
   const imgRefs = useRef<(HTMLImageElement | null)[]>([])
   const rafRef = useRef<number | null>(null)
@@ -160,7 +171,7 @@ export default function CinematicHero() {
   const ctaVisible = effectiveProgress >= 1 - CROSSFADE * 1.5
 
   return (
-    <div className={styles.wrapper} ref={wrapperRef}>
+    <div className={`${styles.wrapper} ${opening ? styles.opening : ''}`} ref={wrapperRef}>
       <div className={styles.sticky}>
         {!ready ? (
           <img className={styles.photo} src={asset(PHOTOS[0].src)} alt="" />
@@ -210,9 +221,28 @@ export default function CinematicHero() {
           </div>
         </div>
 
-        {/* closing beat of the page, after the reference's "last bite" */}
         <div className={`${styles.ctaOverlay} ${ctaVisible || reduced ? styles.ctaOverlayVisible : ''}`}>
-          <LastBite />
+          {opening ? (
+            <div className={styles.welcome}>
+              <span className={styles.eyebrow}>דניאל בייקרי</span>
+              <h1 className={styles.welcomeTitle}>
+                נאפה באהבה,
+                <br />
+                <span className={styles.accent}>בכל ביס.</span>
+              </h1>
+              <p className={styles.welcomeText}>עוגות, עוגיות וקינוחים בעבודת יד, טריים מהתנור.</p>
+              <Link to="/products" className="btn btn-primary">
+                לכל המוצרים
+              </Link>
+              <span className={styles.welcomeHint}>
+                גללו לתפריט
+                <ChevronIcon size={14} className={styles.scrollArrowIcon} />
+              </span>
+            </div>
+          ) : (
+            // closing beat of the page, after the reference's "last bite"
+            <LastBite />
+          )}
         </div>
       </div>
     </div>

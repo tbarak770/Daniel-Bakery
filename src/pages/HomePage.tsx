@@ -1,9 +1,9 @@
 import AboutPreview from '../components/home/AboutPreview'
 import CategoryShowcase from '../components/home/CategoryShowcase'
 import CinematicHero from '../components/home/CinematicHero'
-import CookieStoryMobile from '../components/home/CookieStoryMobile'
 import CroissantScrollSequence from '../components/home/CroissantScrollSequence'
 import Gallery from '../components/home/Gallery'
+import MobileFinale from '../components/home/MobileFinale'
 import ProductsSection from '../components/home/ProductsSection'
 import QuoteSection from '../components/home/QuoteSection'
 import { products } from '../data/products'
@@ -17,7 +17,8 @@ export default function HomePage() {
 
   return (
     <>
-      <CroissantScrollSequence />
+      {/* phones open with the light cookie story instead of the heavy croissant frames */}
+      {isDesktop ? <CroissantScrollSequence /> : <CinematicHero variant="opening" />}
       <CategoryShowcase />
       <ProductsSection
         eyebrow="הכי אהובים"
@@ -37,7 +38,7 @@ export default function HomePage() {
       <QuoteSection />
       <Gallery />
       {/* the cookie story closes the page, like the reference's "last bite" */}
-      {isDesktop ? <CinematicHero /> : <CookieStoryMobile />}
+      {isDesktop ? <CinematicHero /> : <MobileFinale />}
     </>
   )
 }

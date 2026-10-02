@@ -31,8 +31,10 @@
   }
 }
 
+/* phones: two compact cards per row, like a shopping app (card compacts itself) */
 @media (max-width: 560px) {
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }

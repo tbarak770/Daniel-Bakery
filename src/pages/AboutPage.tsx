@@ -7,7 +7,11 @@ export default function AboutPage() {
     <div className={styles.page}>
       <div className={`container ${styles.hero}`}>
         <span className="eyebrow">הסיפור שלנו</span>
-        <h1>Daniel Bakery | דניאל בייקרי</h1>
+        <h1>
+          <span className={styles.titleEn}>Daniel Bakery</span>
+          <span className={styles.titleSep}> | </span>
+          <span>דניאל בייקרי</span>
+        </h1>
         <p>מאחורי כל עוגה, עוגייה וקינוח שיוצאים מהמטבח שלנו עומדת אהבה גדולה לאפייה - ורצון פשוט לשמח אנשים.</p>
       </div>
 

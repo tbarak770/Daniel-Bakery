@@ -45,6 +45,29 @@
   border-color: var(--color-accent);
 }
 
+/* phones: one row of tabs (scrolls sideways if it ever needs to) */
+@media (max-width: 560px) {
+  .tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 1.8rem -18px 2rem;
+    padding: 0 18px;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    padding: 0.6rem 1.15rem;
+    font-size: 0.9rem;
+  }
+}
+
 .searchNotice {
   text-align: center;
   color: var(--color-text-70);
