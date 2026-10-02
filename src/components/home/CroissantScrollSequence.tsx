@@ -7,49 +7,24 @@ import LoadingScreen from './LoadingScreen'
 import styles from './CroissantScrollSequence.module.css'
 
 /*
- * Scroll-scrubbed croissant shot: 67 frames driven by the scroll position (no
- * scroll hijacking). The frames carry the camera move (push-in while proofing/
- * baking, pull-out to the wide hero shot). For a film-like feel the shown
- * position eases after the wheel and adjacent frames dissolve by the exact
- * fractional position; at rest it settles on a whole frame. The code also
- * stabilises each frame and adds a faint warm glow. See CLAUDE.md.
+ * Scroll-scrubbed croissant shot: 120 frames cut from two AI videos the user
+ * made (dough -> baking, baking -> wide hero shot), the same way the reference
+ * (crussant.vercel.app) was built. Scroll position drives the frame (no scroll
+ * hijacking). For a film-like feel the shown position eases after the wheel and
+ * adjacent frames dissolve by the exact fractional position; at rest it settles
+ * on a whole frame. Seam dissolve and camera smoothing are baked into the
+ * frames (see CLAUDE.md), so the code draws them as-is plus a faint warm glow.
  */
-const FRAME_COUNT = 67
+const FRAME_COUNT = 120
 const FRAME_ASPECT = 16 / 9
 
 // Loading screen: first visit only, never longer than this.
 const LOADING_MAX_MS = 6000
 let framesLoadedOnce = false
 
-// Stabilisation, measured offline from the frames themselves (adjacent-frame
-// motion -> smoothed camera path). Per frame: [scale, shiftX, shiftY], shifts
-// in frame-width units. Clamped to the brief: scale 1/1.025..1.025, |shift| <= 6px.
-const CAMERA_CORRECTION: [number, number, number][] = [
-  [1.0067, 0.00093, -0.00116], [1.006, 0.00166, -0.00193], [0.9758, -0.00053, 0.00324], [1.0075, 0.00234, -0.00211],
-  [0.9923, -0.00417, 0.00148], [1.025, 0.00326, -0.00417], [1.012, 0.00202, -0.00417], [1.0102, -0.00142, 0.00417],
-  [0.9818, 0.00034, 0.00283], [0.9839, 0.00009, 0.0038], [0.9932, -0.00015, -0.00067], [0.9978, -0.00042, -0.00051],
-  [1.0017, 0.00038, -0.00008], [1.0017, 0.00016, 0.00055], [0.9958, 0.00002, 0.00239], [1.0044, 0.00105, -0.00083],
-  [1.0062, 0.00012, 0.00019], [1.0065, 0.00032, -0.001], [1.0048, -0.00053, -0.00239], [1.0021, -0.00046, -0.00076],
-  [0.9756, -0.00164, 0.00417], [1.0128, 0.00016, -0.00066], [1.008, -0.00039, -0.00177], [0.9899, -0.00001, 0.00138],
-  [0.9971, 0.00033, 0.00139], [1.0137, -0.00034, -0.00301], [1.0212, 0.00016, -0.00348], [0.9904, 0.00186, 0.002],
-  [0.9925, 0.00072, 0.00127], [0.9929, -0.00022, 0.00065], [0.9991, 0.00003, 0.00023], [1.0006, 0.00035, -0.00007],
-  [1.0042, -0.00038, -0.00035], [1.0042, -0.0001, -0.00062], [1.0067, -0.00092, -0.00085], [0.9854, 0.00131, 0.00417],
-  [0.9976, -0.00065, -0.00093], [0.9976, -0.00063, -0.00077], [0.9973, -0.00073, -0.00064], [0.998, 0.0001, -0.00064],
-  [1.0009, -0.00012, 0.00024], [1, 0.00083, -0.00008], [0.9969, 0.00106, -0.0006], [0.9909, 0.00182, -0.00139],
-  [0.9848, 0.00319, -0.00142], [0.9949, 0.00299, -0.00058], [1.0161, -0.00417, 0.0024], [1.0098, -0.00251, 0.0013],
-  [1.0042, -0.00101, 0.00051], [0.9999, 0.00004, -0.00005], [0.9953, -0.00028, -0.00046], [0.9892, 0.00028, 0.0002],
-  [0.984, -0.0003, 0.00079], [0.9802, -0.00101, 0.00009], [1.025, 0.00192, -0.00417], [0.9822, -0.00384, -0.00104],
-  [0.9951, 0.00103, 0.00224], [0.9991, 0.00053, 0.00132], [0.9979, -0.00009, 0.00058], [0.9957, -0.00083, 0.00006],
-  [0.9956, -0.00164, -0.00027], [1.0043, 0.0017, 0.0006], [1.003, 0.00091, 0.00055], [1.0034, 0.00027, 0.00065],
-  [0.9996, -0.0002, -0.00016], [1.0028, 0.00051, 0.00023], [1.0027, 0.00028, 0.00077],
-]
-// Every frame is drawn this much larger so a correction (or the shake) can never
-// reveal the photo's edge. Equals 1 / the smallest correction scale.
-const OVERSCAN = 1.025
-
-// Portrait screens: cover would crop the croissant in the close frames (25-40),
-// so the frame is scaled to fit this croissant span (fraction of frame width).
-const CROISSANT_SPAN = 0.56
+// Portrait screens: cover would crop the croissant in the closest frames, so the
+// frame is scaled to fit this croissant span (fraction of frame width).
+const CROISSANT_SPAN = 0.58
 
 function easeInOut(t: number) {
   return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2
@@ -63,19 +38,18 @@ function rangeProgress(value: number, from: number, to: number) {
 // - the shown position eases toward the scroll position (wheel notches jump
 //   ~1.5 frames at once; easing turns them into continuous motion)
 // - between two frames the next one dissolves in by the exact fractional
-//   position, each drawn with its own stabilisation so the two line up
+//   position
 // - once scrolling stops the shown position settles on a whole, crisp frame
 const EASE_MS = 140
 const IDLE_SNAP_MS = 160
 
-// Warm glow: rises from frame 9, peaks at frames 20-25, gone by frame 35.
-// Takes the fractional frame position so it changes smoothly too.
-function glowFor(pos: number) {
-  const f = pos + 1
-  if (f <= 9 || f >= 35) return 0
-  if (f < 20) return 0.12 * easeInOut(rangeProgress(f, 9, 20))
-  if (f <= 25) return 0.12
-  return 0.12 * (1 - easeInOut(rangeProgress(f, 25, 35)))
+// Warm glow follows the story: rises as the oven fire builds (progress 0.12),
+// strongest while the croissant bakes in the flames (0.28-0.40), gone by 0.55.
+function glowFor(p: number) {
+  if (p <= 0.12 || p >= 0.55) return 0
+  if (p < 0.28) return 0.12 * easeInOut(rangeProgress(p, 0.12, 0.28))
+  if (p <= 0.4) return 0.12
+  return 0.12 * (1 - easeInOut(rangeProgress(p, 0.4, 0.55)))
 }
 
 // Text beats (timed like the reference): trapezoid fade + linear ramp.
@@ -160,16 +134,11 @@ export default function CroissantScrollSequence() {
     let speed = 0
     let loaded = 0
 
-    // one frame, drawn with its own stabilisation correction
     function drawFrame(index: number, alpha: number) {
-      const [a, bx, by] = CAMERA_CORRECTION[index]
-      const s = OVERSCAN * a
-      const w = box.w * s
-      const h = box.h * s
       ctx!.globalAlpha = alpha
-      ctx!.drawImage(frames!.images[index], box.x + box.w / 2 + bx * box.w - w / 2, box.y + box.h / 2 + by * box.w - h / 2, w, h)
+      ctx!.drawImage(frames!.images[index], box.x, box.y, box.w, box.h)
       ctx!.globalAlpha = 1
-      return { cy: box.y + box.h / 2 + by * box.w, h }
+      return { cy: box.y + box.h / 2, h: box.h }
     }
 
     function draw(pos: number) {
@@ -206,7 +175,7 @@ export default function CroissantScrollSequence() {
         }
       }
 
-      if (glowRef.current) glowRef.current.style.opacity = reduced ? '0' : glowFor(pos).toFixed(3)
+      if (glowRef.current) glowRef.current.style.opacity = reduced ? '0' : glowFor(pos / (FRAME_COUNT - 1)).toFixed(3)
     }
 
     function applyText(p: number) {

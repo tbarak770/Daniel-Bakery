@@ -4,8 +4,9 @@
  * it (negative margin-bottom pulls the next section into that tail).
  */
 .section {
-  --frame-steps: 66;
-  --px-per-frame: 68px;
+  /* 119 steps x 38px = same total scroll as before (~4500px desktop, ~3300px phone) */
+  --frame-steps: 119;
+  --px-per-frame: 38px;
   position: relative;
   height: calc(200vh + var(--frame-steps) * var(--px-per-frame));
   margin-bottom: -100vh;
@@ -134,7 +135,7 @@
 
 @media (max-width: 767px) {
   .section {
-    --px-per-frame: 50px;
+    --px-per-frame: 28px;
   }
 }
 
